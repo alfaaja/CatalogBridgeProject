@@ -60,10 +60,10 @@ hosted reviewer. Public signup and anonymous sign-in must remain disabled in
 the Supabase project. The application does not use or require a service-role
 key.
 
-The committed schema migration is under `supabase/migrations`. Apply it to the
-intended Supabase project before using product persistence, then generate and
-commit database types from that migrated schema. Do not hand-write generated
-database types.
+The committed schema migration is under `supabase/migrations` and has been
+applied to the intended Supabase project. Generated database types are kept in
+`src/lib/supabase/database.types.ts`; regenerate them after future schema
+changes rather than editing them by hand.
 
 ## Verification
 
@@ -76,11 +76,11 @@ npm run build
 
 ## Current milestone
 
-Milestone 1 adds the committed product persistence schema, explicit RLS and
-privilege boundaries, minimal reviewer authentication, and focused server-side
-data-access operations. The migration has not been applied automatically.
-Dashboard, JakMall import, product review, and Shopee preparation remain later
-milestones.
+Milestone 2 adds the authenticated application shell, a real-data Dashboard,
+the Products list, and the Import Product entry screen. Metrics and product
+rows come from the authenticated Supabase persistence boundary; empty and
+failure states are shown explicitly. The real JakMall import workflow remains
+Milestone 3 work.
 
 Project scope and sequencing are documented in
 [`docs/24-IMPLEMENTATION-PLAN.md`](docs/24-IMPLEMENTATION-PLAN.md).

@@ -23,7 +23,9 @@ describe("Supabase session proxy", () => {
     createServerClientMock.mockReset()
   })
 
-  it("redirects an unauthenticated protected request to login", async () => {
+  it.each(["/", "/products", "/products/source-id", "/import"])(
+    "redirects an unauthenticated %s request to login",
+    async (pathname) => {
     createServerClientMock.mockReturnValue({
       auth: {
         getClaims: vi.fn().mockResolvedValue({
@@ -34,14 +36,15 @@ describe("Supabase session proxy", () => {
     })
 
     const response = await updateSession(
-      new NextRequest("https://catalogbridge.example/")
+      new NextRequest(`https://catalogbridge.example${pathname}`)
     )
 
     expect(response.status).toBe(307)
     expect(response.headers.get("location")).toBe(
       "https://catalogbridge.example/login"
     )
-  })
+    }
+  )
 
   it("allows an authenticated request to continue", async () => {
     createServerClientMock.mockReturnValue({
