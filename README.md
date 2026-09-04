@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CatalogBridge
 
-## Getting Started
+CatalogBridge is a hosted proof of concept for importing public JakMall product
+data, reviewing normalized information, and preparing it for Shopee Seller with
+less repetitive manual work.
 
-First, run the development server:
+## Technology
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Next.js 16 with React 19 and TypeScript
+- Tailwind CSS 4 and shadcn/ui Nova
+- Supabase JS and SSR clients
+- Zod validation
+- Vitest and Testing Library
+
+Exact dependency versions are recorded in `package.json` and `package-lock.json`.
+
+## Local setup
+
+Install the existing dependencies and create a local environment file:
+
+```powershell
+npm install
+Copy-Item .env.example .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Set these variables in `.env.local` using the public values from the Supabase
+project:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```env
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Never place a service-role key or another secret in a `NEXT_PUBLIC_` variable.
 
-## Learn More
+Start the development server:
 
-To learn more about Next.js, take a look at the following resources:
+```powershell
+npm run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Open `http://localhost:3000`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Supabase health check
 
-## Deploy on Vercel
+With the app running, request:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```powershell
+Invoke-RestMethod http://127.0.0.1:3000/api/health/supabase
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The endpoint returns `200` when Supabase is reachable and `503` when its public
+configuration is invalid or the upstream service cannot be reached. Public
+responses do not include configuration values or raw exceptions.
+
+## Verification
+
+```powershell
+npm run test
+npm run typecheck
+npm run lint
+npm run build
+```
+
+## Current milestone
+
+Milestone 0 establishes the verified repository foundation, safe public Supabase
+configuration, health check, and project identity. Database schema, Auth,
+JakMall import, product review, and Shopee preparation begin in later milestones.
+
+Project scope and sequencing are documented in
+[`docs/24-IMPLEMENTATION-PLAN.md`](docs/24-IMPLEMENTATION-PLAN.md).

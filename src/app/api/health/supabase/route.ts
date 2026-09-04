@@ -1,51 +1,69 @@
-import { NextResponse } from "next/server"
+import { readSupabasePublicConfig } from "@/lib/supabase/config"
+
+const HEALTH_CHECK_TIMEOUT_MS = 5_000
+
+function healthyResponse() {
+  return Response.json({
+    ok: true,
+    status: "healthy",
+    message: "Supabase is reachable.",
+  })
+}
+
+function unavailableResponse() {
+  return Response.json(
+    {
+      ok: false,
+      status: "unavailable",
+      message: "Supabase is unavailable.",
+    },
+    { status: 503 }
+  )
+}
+
+function requestFailureCategory(error: unknown) {
+  if (
+    error instanceof DOMException &&
+    (error.name === "AbortError" || error.name === "TimeoutError")
+  ) {
+    return "timeout"
+  }
+
+  return "request_error"
+}
 
 export async function GET() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+  const configResult = readSupabasePublicConfig()
 
-  if (!url || !key) {
-    return NextResponse.json(
-      {
-        ok: false,
-        message: "Supabase environment variables are missing.",
-      },
-      { status: 500 }
-    )
+  if (!configResult.ok) {
+    console.error("Supabase health check configuration is invalid.", {
+      issues: configResult.issues,
+    })
+    return unavailableResponse()
   }
 
   try {
-    const baseUrl = url.replace(/\/+$/, "")
-
-    const response = await fetch(`${baseUrl}/auth/v1/health`, {
+    const response = await fetch(`${configResult.config.url}/auth/v1/health`, {
       headers: {
-        apikey: key,
+        apikey: configResult.config.publishableKey,
       },
       cache: "no-store",
+      signal: AbortSignal.timeout(HEALTH_CHECK_TIMEOUT_MS),
     })
 
     if (!response.ok) {
-      return NextResponse.json(
-        {
-          ok: false,
-          message: "Unable to reach Supabase.",
-          status: response.status,
-        },
-        { status: 500 }
+      console.error(
+        "Supabase health check returned a non-success status.",
+        { upstreamStatus: response.status }
       )
+      return unavailableResponse()
     }
 
-    return NextResponse.json({
-      ok: true,
-      message: "Supabase connected successfully.",
+    return healthyResponse()
+  } catch (error) {
+    console.error("Supabase health check request failed.", {
+      category: requestFailureCategory(error),
     })
-  } catch {
-    return NextResponse.json(
-      {
-        ok: false,
-        message: "Supabase connection failed.",
-      },
-      { status: 500 }
-    )
+    return unavailableResponse()
   }
 }
