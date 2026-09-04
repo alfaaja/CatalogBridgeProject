@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest"
 const migrationSource = readFileSync(
   resolve(
     process.cwd(),
-    "supabase/migrations/20260904154515_create_catalog_persistence.sql"
+    "supabase/migrations/20260904165616_create_catalog_persistence.sql"
   ),
   "utf8"
 )
