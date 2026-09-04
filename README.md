@@ -53,6 +53,18 @@ The endpoint returns `200` when Supabase is reachable and `503` when its public
 configuration is invalid or the upstream service cannot be reached. Public
 responses do not include configuration values or raw exceptions.
 
+## Reviewer access
+
+CatalogBridge uses one manually created Supabase email/password account for the
+hosted reviewer. Public signup and anonymous sign-in must remain disabled in
+the Supabase project. The application does not use or require a service-role
+key.
+
+The committed schema migration is under `supabase/migrations`. Apply it to the
+intended Supabase project before using product persistence, then generate and
+commit database types from that migrated schema. Do not hand-write generated
+database types.
+
 ## Verification
 
 ```powershell
@@ -64,9 +76,11 @@ npm run build
 
 ## Current milestone
 
-Milestone 0 establishes the verified repository foundation, safe public Supabase
-configuration, health check, and project identity. Database schema, Auth,
-JakMall import, product review, and Shopee preparation begin in later milestones.
+Milestone 1 adds the committed product persistence schema, explicit RLS and
+privilege boundaries, minimal reviewer authentication, and focused server-side
+data-access operations. The migration has not been applied automatically.
+Dashboard, JakMall import, product review, and Shopee preparation remain later
+milestones.
 
 Project scope and sequencing are documented in
 [`docs/24-IMPLEMENTATION-PLAN.md`](docs/24-IMPLEMENTATION-PLAN.md).
