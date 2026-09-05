@@ -7,6 +7,16 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "1100kb",
     },
   },
+  images: {
+    remotePatterns: [
+      {
+        hostname: "static.jakmall.id",
+        pathname: "/**",
+        port: "",
+        protocol: "https",
+      },
+    ],
+  },
 };
 
 export default nextConfig;

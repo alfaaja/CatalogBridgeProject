@@ -49,7 +49,7 @@ export function ProductTable({
       <p className="border-b bg-muted/30 px-4 py-2 text-xs text-muted-foreground lg:hidden">
         Scroll horizontally to view all product fields.
       </p>
-      <Table className="min-w-[720px]" containerLabel={accessibleLabel}>
+      <Table className="min-w-[820px]" containerLabel={accessibleLabel}>
         <TableHeader className="bg-muted/30">
           <TableRow className="hover:bg-transparent">
             <TableHead className="h-9 pl-4 text-xs tracking-wide text-muted-foreground uppercase">
@@ -66,6 +66,9 @@ export function ProductTable({
             </TableHead>
             <TableHead className="h-9 pr-4 text-right text-xs tracking-wide text-muted-foreground uppercase">
               Updated
+            </TableHead>
+            <TableHead className="h-9 pr-4 text-right text-xs tracking-wide text-muted-foreground uppercase">
+              Action
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -102,6 +105,15 @@ export function ProductTable({
                 <time dateTime={product.updatedAt}>
                   {formatProductUpdatedAt(product.updatedAt)}
                 </time>
+              </TableCell>
+              <TableCell className="pr-4 text-right">
+                <Link
+                  aria-label={`View ${product.title ?? "untitled product"}`}
+                  className={buttonVariants({ size: "sm", variant: "outline" })}
+                  href={`/products/${product.id}`}
+                >
+                  View Product
+                </Link>
               </TableCell>
             </TableRow>
           ))}

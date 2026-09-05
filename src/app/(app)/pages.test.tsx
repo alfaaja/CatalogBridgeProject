@@ -5,9 +5,12 @@ import { load } from "cheerio"
 import { renderToStaticMarkup } from "react-dom/server"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-const { listProductSummariesMock } = vi.hoisted(() => ({
-  listProductSummariesMock: vi.fn(),
-}))
+const { getProductReviewMock, listProductSummariesMock, notFoundMock } =
+  vi.hoisted(() => ({
+    getProductReviewMock: vi.fn(),
+    listProductSummariesMock: vi.fn(),
+    notFoundMock: vi.fn(),
+  }))
 
 function listTsxFiles(directory: string): string[] {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
@@ -24,14 +27,25 @@ function listTsxFiles(directory: string): string[] {
 vi.mock("@/lib/supabase/product-repository", () => ({
   listProductSummaries: listProductSummariesMock,
 }))
+vi.mock("@/lib/supabase/product-review-repository", () => ({
+  getProductReview: getProductReviewMock,
+}))
+vi.mock("next/navigation", () => ({
+  notFound: notFoundMock,
+}))
 
 import DashboardPage from "./page"
 import ImportProductPage from "./import/page"
+import ProductReviewPage from "./products/[id]/page"
 import ProductsPage from "./products/page"
 
 describe("Milestone 2 application pages", () => {
   beforeEach(() => {
+    getProductReviewMock.mockReset()
     listProductSummariesMock.mockReset()
+    notFoundMock.mockImplementation(() => {
+      throw new Error("NEXT_NOT_FOUND")
+    })
   })
 
   it("renders legitimate zero metrics and an empty state", async () => {
@@ -95,6 +109,73 @@ describe("Milestone 2 application pages", () => {
 
     expect(tableRegion.attr("tabindex")).toBe("0")
     expect(tableRegion.find("table")).toHaveLength(1)
+    expect($('a[href="/products/00000000-0000-0000-0000-000000000001"]').text()).toContain(
+      "View Product"
+    )
+  })
+
+  it("renders the product review route from persisted data", async () => {
+    getProductReviewMock.mockResolvedValue({
+      ok: true,
+      product: {
+        attributes: {},
+        brand: null,
+        createdAt: "2026-09-05T00:00:00+07:00",
+        description: null,
+        dimensionsCm: { height: null, length: null, width: null },
+        failure: null,
+        gtin: null,
+        id: "00000000-0000-4000-8000-000000000000",
+        images: [],
+        logs: [],
+        rawSourceData: {},
+        sellingPrice: null,
+        sku: null,
+        source: {
+          canonicalUrl: "https://www.jakmall.com/jep/product",
+          category: null,
+          platform: "jakmall",
+          price: 64600,
+          productIdentifier: "JEP-001",
+        },
+        status: "REVIEW_REQUIRED",
+        stock: null,
+        title: "JEP Tang Pisau Lipat",
+        updatedAt: "2026-09-05T00:00:00+07:00",
+        variantAxes: [],
+        variants: [],
+        weightGrams: null,
+      },
+    })
+
+    const $ = load(
+      renderToStaticMarkup(
+        await ProductReviewPage({
+          params: Promise.resolve({
+            id: "00000000-0000-4000-8000-000000000000",
+          }),
+        })
+      )
+    )
+
+    expect($("h1").text()).toContain("JEP Tang Pisau Lipat")
+    expect($("body").text()).toContain("Product information")
+    expect($("body").text()).not.toContain("Prepare for Shopee")
+  })
+
+  it("uses not-found for invalid, missing, or RLS-hidden product routes", async () => {
+    getProductReviewMock.mockResolvedValue({
+      ok: false,
+      error: "PRODUCT_NOT_FOUND",
+    })
+
+    await expect(
+      ProductReviewPage({
+        params: Promise.resolve({
+          id: "00000000-0000-4000-8000-000000000000",
+        }),
+      })
+    ).rejects.toThrow("NEXT_NOT_FOUND")
   })
 
   it("does not render navigation links through Base UI Button", () => {
