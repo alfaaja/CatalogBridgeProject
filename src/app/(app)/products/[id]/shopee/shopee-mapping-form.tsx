@@ -1,53 +1,59 @@
-"use client"
+"use client";
 
-import { useActionState } from "react"
-import { ArrowLeft, CheckCircle2, RotateCcw, Save } from "lucide-react"
-import Link from "next/link"
+import { useActionState } from "react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  CheckCircle2,
+  RotateCcw,
+  Save,
+} from "lucide-react";
+import Link from "next/link";
 
-import { Button, buttonVariants } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import type { ProductReview } from "@/lib/product-review"
-import type { ShopeeDraft, ShopeePreview as Preview } from "@/lib/shopee-draft"
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import type { ProductReview } from "@/lib/product-review";
+import type { ShopeeDraft, ShopeePreview as Preview } from "@/lib/shopee-draft";
 
 import {
   markProductReadyForShopeeAction,
   reopenShopeeMappingAction,
   saveShopeeDraftAction,
   type ShopeeActionState,
-} from "./actions"
-import { DestinationAttributesEditor } from "./destination-attributes-editor"
-import { ShopeePreview } from "./shopee-preview"
-import { ShopeeReadinessChecklist } from "./shopee-readiness-checklist"
+} from "./actions";
+import { DestinationAttributesEditor } from "./destination-attributes-editor";
+import { ShopeePreview } from "./shopee-preview";
+import { ShopeeReadinessChecklist } from "./shopee-readiness-checklist";
 
-const initial: ShopeeActionState = {}
+const initial: ShopeeActionState = {};
 export function ShopeeMappingForm({
   draft,
   preview,
   product,
 }: {
-  draft: ShopeeDraft | null
-  preview: Preview
-  product: ProductReview
+  draft: ShopeeDraft | null;
+  preview: Preview;
+  product: ProductReview;
 }) {
-  const editable = product.status === "REVIEW_REQUIRED"
-  const ready = product.status === "READY"
+  const editable = product.status === "REVIEW_REQUIRED";
+  const ready = product.status === "READY";
   const [saveState, saveAction, saving] = useActionState(
     saveShopeeDraftAction.bind(null, product.id),
-    initial
-  )
+    initial,
+  );
   const [readyState, readyAction, readying] = useActionState(
     markProductReadyForShopeeAction.bind(null, product.id),
-    initial
-  )
+    initial,
+  );
   const [reopenState, reopenAction, reopening] = useActionState(
     reopenShopeeMappingAction.bind(null, product.id),
-    initial
-  )
+    initial,
+  );
   const blockers = preview.issues.filter(
-    (issue) => issue.severity === "blocker"
-  ).length
+    (issue) => issue.severity === "blocker",
+  ).length;
   return (
     <div className="mx-auto w-full max-w-[1600px] px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
       <header className="border-b pb-5">
@@ -233,19 +239,27 @@ export function ShopeeMappingForm({
               </Button>
             </form>
           ) : ready ? (
-            <form
-              action={reopenAction}
-              className="flex flex-wrap items-center justify-between gap-3 border-t pt-6"
-            >
-              <p className="text-sm text-muted-foreground">
-                {reopenState.message ??
-                  "READY drafts are read-only until reopened."}
-              </p>
-              <Button disabled={reopening} type="submit" variant="outline">
-                <RotateCcw aria-hidden="true" />
-                {reopening ? "Reopening..." : "Reopen Shopee Mapping"}
-              </Button>
-            </form>
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t pt-6">
+              <div>
+                <p className="text-sm text-muted-foreground">
+                  {reopenState.message ??
+                    "READY drafts are read-only until reopened."}
+                </p>
+                <form action={reopenAction} className="mt-3">
+                  <Button disabled={reopening} type="submit" variant="outline">
+                    <RotateCcw aria-hidden="true" />
+                    {reopening ? "Reopening..." : "Reopen Shopee Mapping"}
+                  </Button>
+                </form>
+              </div>
+              <Link
+                className={buttonVariants()}
+                href={`/products/${product.id}/shopee/handoff`}
+              >
+                Continue to Guided Handoff
+                <ArrowRight aria-hidden="true" />
+              </Link>
+            </div>
           ) : (
             <p className="border-t pt-6 text-sm text-muted-foreground">
               Shopee mapping is available after product review is required.
@@ -255,5 +269,5 @@ export function ShopeeMappingForm({
         <ShopeeReadinessChecklist issues={preview.issues} />
       </div>
     </div>
-  )
+  );
 }

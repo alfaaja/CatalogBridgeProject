@@ -76,15 +76,20 @@ npm run build
 
 ## Current milestone
 
-Milestone 5 adds authenticated Shopee draft mapping at
-`/products/[id]/shopee`. A reviewer can compare reviewed CatalogBridge data
-with its proposed destination values, explicitly confirm category and listing
-decisions, save one draft per product, and mark a locally complete product
-`READY`. A ready draft is read-only until it is deliberately reopened.
+Milestone 6 adds an authenticated guided manual handoff at
+`/products/[id]/shopee/handoff`. CatalogBridge rebuilds the current persisted
+`READY` draft on the server, validates it, and prepares a snapshot-scoped
+handoff package for manual entry in Shopee Seller Centre.
 
-This milestone does not connect to Shopee, upload media, submit listings, or
-publish products. Shipping availability and unsupported seller controls remain
-explicit handoff checks for Shopee Seller Centre.
+`HANDOFF_PREPARED` means CatalogBridge prepared the current validated snapshot.
+`SELLER_CENTRE_REVIEWER_CONFIRMED` means a reviewer attested that the same
+snapshot was transferred, retained by a non-publishing Seller Centre save, and
+checked for required account-side shipping or service settings. This is
+reviewer evidence, not independent Shopee or API verification.
+
+CatalogBridge does not connect to Shopee, upload images, submit listings, or
+publish products. Seller Centre authentication, category reconciliation, image
+handling, shipping checks, and the non-publishing save remain manual steps.
 
 Project scope and sequencing are documented in
 [`docs/24-IMPLEMENTATION-PLAN.md`](docs/24-IMPLEMENTATION-PLAN.md).

@@ -57,3 +57,15 @@ Why: avoid generated markup lock-in and AI-slop UI.
 Decision: distinguish ready/prepared/exported/uploaded/published states.
 
 Why: proof of result must be credible and not fabricated.
+
+## ADR-011 — Guided manual Shopee handoff
+
+Decision: Milestone 6 prepares a snapshot-scoped, copy-ready handoff for manual
+entry in Seller Centre and records prepared and reviewer-confirmed evidence in
+`process_logs`.
+
+Why: no official mass-upload contract or legitimate API access was verified for
+the deadline path. The READY revision participates in the fingerprint so old
+evidence cannot become current again after reopening and re-readying a product.
+Reviewer confirmation remains explicitly distinct from independent Shopee
+verification or publication.

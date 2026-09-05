@@ -16,4 +16,22 @@ Expected PoC limitations:
 - image rights/usage are a business/legal consideration outside pure technical extraction;
 - scraping is maintenance-sensitive and must respect platform rules.
 
+Milestone 6 handoff limitations:
+
+- guided handoff is manual and does not prove an API upload, submission,
+  synchronization, or publication;
+- Seller Centre confirmation is a structured reviewer attestation, not
+  independent machine-verifiable Shopee evidence;
+- category choices and dynamic attributes must be reconciled against the live
+  Seller Centre form;
+- source image URLs are references only, so the reviewer must follow Seller
+  Centre's actual image workflow;
+- shipping and service availability is account-dependent and must be checked in
+  Seller Centre;
+- process-log idempotency is application-enforced for the single-reviewer PoC,
+  without a database uniqueness constraint or transaction spanning validation
+  and evidence insertion;
+- exact Seller Centre navigation and non-publishing control remain a manual QA
+  fact and must not be inferred from CatalogBridge evidence.
+
 Do not hide limitations in the demo. Explain the trade-off and what a production continuation would change.

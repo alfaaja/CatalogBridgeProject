@@ -100,6 +100,13 @@ Choose after verification:
 
 Do not fake completion.
 
+Selected implementation: guided manual handoff. For a current `READY` product,
+CatalogBridge builds a server-derived, fingerprinted handoff package and lets a
+reviewer attest to a retained non-publishing save in Seller Centre. Prepared and
+reviewer-confirmed evidence is stored in `process_logs` for the current READY
+revision only. No migration, new product status, Shopee API, mass-upload file,
+or browser automation is part of this milestone.
+
 ## Milestone 7 — P1 reliability/value-add
 
 Only after P0 works:

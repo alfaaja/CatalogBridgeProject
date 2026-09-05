@@ -35,22 +35,22 @@ Never silently coerce a risky field just to reach “Ready.”
 
 ## Typical mapping
 
-| Normalized source | Shopee concept | Default policy |
-|---|---|---|
-| title | Product name | AUTO |
-| description | Description | AUTO after safe formatting |
-| images | Product photos | AUTO if valid |
-| promotional image | Promotional photo | REVIEW/DEFAULT |
-| selling price | Price | AUTO after user-approved pricing rule |
-| stock | Stock | AUTO when known |
-| SKU | Parent/variation SKU | AUTO where semantics match |
-| variant axes | Variations | AUTO/REVIEW |
-| weight grams | Weight | AUTO when known |
-| dimensions | Package size | AUTO when known |
-| source category | Shopee category | REVIEW_REQUIRED unless mapping verified |
-| attributes | Category attributes | AUTO only for verified mapping |
-| hazardous material | Dangerous product | REVIEW_REQUIRED unless explicit source data exists |
-| condition | Condition | DEFAULT only with explicit business rule |
+| Normalized source  | Shopee concept       | Default policy                                     |
+| ------------------ | -------------------- | -------------------------------------------------- |
+| title              | Product name         | AUTO                                               |
+| description        | Description          | AUTO after safe formatting                         |
+| images             | Product photos       | AUTO if valid                                      |
+| promotional image  | Promotional photo    | REVIEW/DEFAULT                                     |
+| selling price      | Price                | AUTO after user-approved pricing rule              |
+| stock              | Stock                | AUTO when known                                    |
+| SKU                | Parent/variation SKU | AUTO where semantics match                         |
+| variant axes       | Variations           | AUTO/REVIEW                                        |
+| weight grams       | Weight               | AUTO when known                                    |
+| dimensions         | Package size         | AUTO when known                                    |
+| source category    | Shopee category      | REVIEW_REQUIRED unless mapping verified            |
+| attributes         | Category attributes  | AUTO only for verified mapping                     |
+| hazardous material | Dangerous product    | REVIEW_REQUIRED unless explicit source data exists |
+| condition          | Condition            | DEFAULT only with explicit business rule           |
 
 ## Integration adapter
 
@@ -58,10 +58,10 @@ Keep interface flexible, for example:
 
 ```ts
 interface ShopeeListingAdapter {
-  prepare(product: NormalizedProduct): Promise<ShopeeDraft>
-  validate(draft: ShopeeDraft): Promise<ValidationResult>
-  export?(draft: ShopeeDraft): Promise<ExportArtifact>
-  submit?(draft: ShopeeDraft): Promise<SubmissionResult>
+  prepare(product: NormalizedProduct): Promise<ShopeeDraft>;
+  validate(draft: ShopeeDraft): Promise<ValidationResult>;
+  export?(draft: ShopeeDraft): Promise<ExportArtifact>;
+  submit?(draft: ShopeeDraft): Promise<SubmissionResult>;
 }
 ```
 
@@ -84,3 +84,30 @@ UI labels must distinguish:
 - **Published / Verified**.
 
 Never label a prepared draft as published.
+
+## Milestone 6 guided handoff
+
+The deadline path uses a guided manual handoff because current reconnaissance
+did not confirm an official mass-upload template or legitimate API access for
+the reviewer account. CatalogBridge exposes the current server-validated
+`READY` snapshot at `/products/[id]/shopee/handoff`; it does not imitate Seller
+Centre or automatically fill it.
+
+The handoff package contains only allowlisted destination-operational values.
+It excludes source price, raw source data, parser diagnostics, process logs,
+authentication state, and internal identifiers that Seller Centre does not
+need. Images are shown as references for manual handling; the application does
+not claim that Seller Centre accepts remote image URLs.
+
+Evidence remains snapshot-specific:
+
+- `HANDOFF_PREPARED` means CatalogBridge constructed the current validated
+  package.
+- `SELLER_CENTRE_REVIEWER_CONFIRMED` means the reviewer explicitly attested
+  that the same values were transferred, a non-publishing save was accepted and
+  retained, and required account-side shipping/service checks were completed.
+
+The second event is reviewer attestation, not independent verification by
+Shopee. It does not mean uploaded, submitted, synchronized, or published. The
+exact current Seller Centre route and non-publishing control must be recorded
+from manual QA rather than guessed in application code or documentation.

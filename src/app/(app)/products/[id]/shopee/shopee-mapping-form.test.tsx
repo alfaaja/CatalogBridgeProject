@@ -1,12 +1,12 @@
-import { renderToStaticMarkup } from "react-dom/server"
-import { describe, expect, it } from "vitest"
+import { renderToStaticMarkup } from "react-dom/server";
+import { describe, expect, it } from "vitest";
 
-import type { ProductReview } from "@/lib/product-review"
-import { buildShopeePreview, type ShopeeDraft } from "@/lib/shopee-draft"
+import type { ProductReview } from "@/lib/product-review";
+import { buildShopeePreview, type ShopeeDraft } from "@/lib/shopee-draft";
 
-import { ShopeeMappingForm } from "./shopee-mapping-form"
+import { ShopeeMappingForm } from "./shopee-mapping-form";
 
-const productId = "11111111-1111-4111-8111-111111111111"
+const productId = "11111111-1111-4111-8111-111111111111";
 const product = {
   attributes: {},
   brand: "JEP",
@@ -57,7 +57,7 @@ const product = {
     },
   ],
   weightGrams: 250,
-} satisfies ProductReview
+} satisfies ProductReview;
 const draft: ShopeeDraft = {
   categoryAttributes: [],
   categoryAttributesReviewed: true,
@@ -72,7 +72,7 @@ const draft: ShopeeDraft = {
   productId,
   titleOverride: null,
   updatedAt: "2026-09-05T00:00:00Z",
-}
+};
 
 describe("Shopee mapping form", () => {
   it("shows source versus destination and the single-offer mapping without M6 claims", () => {
@@ -81,42 +81,45 @@ describe("Shopee mapping form", () => {
         draft={draft}
         preview={buildShopeePreview(product, draft)}
         product={product}
-      />
-    )
-    expect(html).toContain("Prepare for Shopee")
-    expect(html).toContain("Single source offer mapped as the base listing")
-    expect(html).toContain("Reviewer confirmation required")
+      />,
+    );
+    expect(html).toContain("Prepare for Shopee");
+    expect(html).toContain("Single source offer mapped as the base listing");
+    expect(html).toContain("Reviewer confirmation required");
     expect(html).not.toMatch(
-      /Upload to Shopee|Publish to Shopee|Estimated profit/u
-    )
-  })
+      /Upload to Shopee|Publish to Shopee|Estimated profit/u,
+    );
+  });
 
   it("renders READY mapping read-only with reopen as the only mutation", () => {
-    const ready = { ...product, status: "READY" as const }
+    const ready = { ...product, status: "READY" as const };
     const html = renderToStaticMarkup(
       <ShopeeMappingForm
         draft={draft}
         preview={buildShopeePreview(ready, draft)}
         product={ready}
-      />
-    )
-    expect(html).toContain("Reopen Shopee Mapping")
-    expect(html).not.toContain("Save Shopee Draft")
-    expect(html).not.toContain("Mark Ready for Shopee")
-  })
+      />,
+    );
+    expect(html).toContain("Reopen Shopee Mapping");
+    expect(html).toContain("Continue to Guided Handoff");
+    expect(html).toContain(`/products/${productId}/shopee/handoff`);
+    expect(html).not.toContain("Save Shopee Draft");
+    expect(html).not.toContain("Mark Ready for Shopee");
+  });
 
   it("does not offer mapping mutations before the product review stage", () => {
-    const pending = { ...product, status: "PENDING" as const }
+    const pending = { ...product, status: "PENDING" as const };
     const html = renderToStaticMarkup(
       <ShopeeMappingForm
         draft={null}
         preview={buildShopeePreview(pending, null)}
         product={pending}
-      />
-    )
+      />,
+    );
 
-    expect(html).not.toContain("Save Shopee Draft")
-    expect(html).not.toContain("Mark Ready for Shopee")
-    expect(html).not.toContain("Reopen Shopee Mapping")
-  })
-})
+    expect(html).not.toContain("Save Shopee Draft");
+    expect(html).not.toContain("Mark Ready for Shopee");
+    expect(html).not.toContain("Reopen Shopee Mapping");
+    expect(html).not.toContain("Continue to Guided Handoff");
+  });
+});
