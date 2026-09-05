@@ -1,4 +1,4 @@
-﻿export type Json =
+export type Json =
   | string
   | number
   | boolean
@@ -232,6 +232,62 @@ export type Database = {
           width_cm?: number | null
         }
         Relationships: []
+      }
+      shopee_drafts: {
+        Row: {
+          category_attributes: Json
+          category_attributes_reviewed: boolean
+          category_confirmed: boolean
+          category_id: string | null
+          category_path: string | null
+          condition: string
+          created_at: string
+          dangerous_product: string
+          description_override: string | null
+          preorder: string
+          product_id: string
+          title_override: string | null
+          updated_at: string
+        }
+        Insert: {
+          category_attributes?: Json
+          category_attributes_reviewed?: boolean
+          category_confirmed?: boolean
+          category_id?: string | null
+          category_path?: string | null
+          condition?: string
+          created_at?: string
+          dangerous_product?: string
+          description_override?: string | null
+          preorder?: string
+          product_id: string
+          title_override?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category_attributes?: Json
+          category_attributes_reviewed?: boolean
+          category_confirmed?: boolean
+          category_id?: string | null
+          category_path?: string | null
+          condition?: string
+          created_at?: string
+          dangerous_product?: string
+          description_override?: string | null
+          preorder?: string
+          product_id?: string
+          title_override?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shopee_drafts_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: true
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

@@ -4,6 +4,7 @@ import {
   ExternalLink,
   Info,
   PackageOpen,
+  Send,
 } from "lucide-react"
 import Link from "next/link"
 
@@ -59,15 +60,28 @@ export function ProductReviewForm({ product }: { product: ProductReview }) {
             <ArrowLeft aria-hidden="true" />
             Back to Products
           </Link>
-          <a
-            className={buttonVariants({ variant: "outline" })}
-            href={product.source.canonicalUrl}
-            rel="noreferrer"
-            target="_blank"
-          >
-            View on JakMall
-            <ExternalLink aria-hidden="true" />
-          </a>
+          <div className="flex flex-wrap gap-2">
+            <a
+              className={buttonVariants({ variant: "outline" })}
+              href={product.source.canonicalUrl}
+              rel="noreferrer"
+              target="_blank"
+            >
+              View on JakMall
+              <ExternalLink aria-hidden="true" />
+            </a>
+            {product.status === "REVIEW_REQUIRED" || product.status === "READY" ? (
+              <Link
+                className={buttonVariants()}
+                href={`/products/${product.id}/shopee`}
+              >
+                <Send aria-hidden="true" />
+                {product.status === "READY"
+                  ? "View Shopee Draft"
+                  : "Prepare for Shopee"}
+              </Link>
+            ) : null}
+          </div>
         </div>
         <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div className="min-w-0">

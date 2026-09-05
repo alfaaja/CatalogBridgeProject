@@ -160,7 +160,7 @@ describe("Milestone 2 application pages", () => {
 
     expect($("h1").text()).toContain("JEP Tang Pisau Lipat")
     expect($("body").text()).toContain("Product information")
-    expect($("body").text()).not.toContain("Prepare for Shopee")
+    expect($('a[href$="/shopee"]').text()).toContain("Prepare for Shopee")
   })
 
   it("uses not-found for invalid, missing, or RLS-hidden product routes", async () => {

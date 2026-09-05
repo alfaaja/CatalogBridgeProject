@@ -93,13 +93,15 @@ describe("Product review form", () => {
     expect($('img[alt*="JEP Tang Pisau Lipat"]')).toHaveLength(1)
   })
 
-  it("keeps curated source details secondary and omits M5 controls", () => {
+  it("keeps source details secondary and links to Shopee preparation", () => {
     const $ = load(renderToStaticMarkup(<ProductReviewForm product={product} />))
 
     expect($("details summary").text()).toContain("Source details")
     expect($("body").text()).toContain("OFFER_OPTIONS_UNMAPPED")
     expect($("body").text()).toContain("assisted html")
-    expect($("body").text()).not.toContain("Prepare for Shopee")
+    expect($(`a[href="/products/${productId}/shopee"]`).text()).toContain(
+      "Prepare for Shopee"
+    )
     expect($("body").text()).not.toContain("Shopee category")
     expect($("body").text()).not.toContain("markup")
   })

@@ -76,12 +76,15 @@ npm run build
 
 ## Current milestone
 
-Milestone 4 adds the authenticated Product Review route at `/products/[id]`.
-Reviewers can inspect persisted JakMall evidence, correct approved product and
-variant business fields, and see a readiness checklist while the product stays
-in `REVIEW_REQUIRED`. Source price, source identifiers, imported diagnostics,
-and variant option evidence remain read-only. Shopee mapping and preparation
-remain Milestone 5 work.
+Milestone 5 adds authenticated Shopee draft mapping at
+`/products/[id]/shopee`. A reviewer can compare reviewed CatalogBridge data
+with its proposed destination values, explicitly confirm category and listing
+decisions, save one draft per product, and mark a locally complete product
+`READY`. A ready draft is read-only until it is deliberately reopened.
+
+This milestone does not connect to Shopee, upload media, submit listings, or
+publish products. Shipping availability and unsupported seller controls remain
+explicit handoff checks for Shopee Seller Centre.
 
 Project scope and sequencing are documented in
 [`docs/24-IMPLEMENTATION-PLAN.md`](docs/24-IMPLEMENTATION-PLAN.md).
