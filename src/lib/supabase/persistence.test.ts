@@ -110,6 +110,15 @@ describe("product persistence validation", () => {
     expect(result.success).toBe(false)
   })
 
+  it("rejects raw source data above the 32 KiB diagnostic budget", () => {
+    const result = importedProductSchema.safeParse({
+      ...validImportedProduct,
+      rawSourceData: { publicDiagnostics: "a".repeat(33 * 1024) },
+    })
+
+    expect(result.success).toBe(false)
+  })
+
   it("rejects credential-like values hidden under ordinary raw-data keys", () => {
     const result = importedProductSchema.safeParse({
       ...validImportedProduct,

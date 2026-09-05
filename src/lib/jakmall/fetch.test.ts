@@ -327,6 +327,26 @@ describe("bounded JakMall source fetch", () => {
     ).resolves.toEqual({ ok: false, error })
   })
 
+  it("classifies the confirmed AWS WAF human-verification response safely", async () => {
+    queueResponse({
+      statusCode: 405,
+      headers: {
+        "content-type": "text/html; charset=UTF-8",
+        "x-amzn-waf-action": "captcha",
+      },
+    })
+
+    await expect(
+      fetchJakMallProductDocument(
+        "https://www.jakmall.com/abc-store/example-product"
+      )
+    ).resolves.toEqual({
+      ok: false,
+      error: "SOURCE_UNREACHABLE",
+      classification: "AWS_WAF_HUMAN_VERIFICATION",
+    })
+  })
+
   it("maps request failures to SOURCE_UNREACHABLE", async () => {
     requestMock.mockImplementationOnce(() => {
       const request = new EventEmitter() as EventEmitter & {

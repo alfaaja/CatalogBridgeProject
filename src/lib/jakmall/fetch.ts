@@ -21,6 +21,8 @@ type SourceFetchError =
   | "SOURCE_TIMEOUT"
   | "SOURCE_UNREACHABLE"
 
+export type JakMallFetchClassification = "AWS_WAF_HUMAN_VERIFICATION"
+
 export type FetchedJakMallDocument = Readonly<{
   body: string
   byteLength: number
@@ -31,14 +33,22 @@ export type FetchedJakMallDocument = Readonly<{
 
 export type JakMallFetchResult =
   | Readonly<{ ok: true; document: FetchedJakMallDocument }>
-  | Readonly<{ ok: false; error: SourceFetchError }>
+  | Readonly<{
+      ok: false
+      error: SourceFetchError
+      classification?: JakMallFetchClassification
+    }>
 
 type ResolvedAddress = Readonly<{ address: string; family: 4 | 6 }>
 
 type HopResult =
   | Readonly<{ kind: "document"; body: Buffer; contentType: string }>
   | Readonly<{ kind: "redirect"; location: string | null }>
-  | Readonly<{ kind: "status"; statusCode: number }>
+  | Readonly<{
+      kind: "status"
+      statusCode: number
+      classification?: JakMallFetchClassification
+    }>
   | Readonly<{ kind: "invalid-response" }>
 
 function parseIpv4(address: string): readonly number[] | null {
@@ -359,8 +369,18 @@ function requestHop(
         }
 
         if (statusCode < 200 || statusCode >= 300) {
+          const wafAction = getHeader(response.headers, "x-amzn-waf-action")
           response.resume()
-          resolve({ kind: "status", statusCode })
+          resolve({
+            kind: "status",
+            statusCode,
+            ...(wafAction?.trim().toLowerCase() === "captcha"
+              ? {
+                  classification:
+                    "AWS_WAF_HUMAN_VERIFICATION" as const,
+                }
+              : {}),
+          })
           return
         }
 
@@ -410,8 +430,13 @@ function requestHop(
   })
 }
 
-function failed(error: SourceFetchError): JakMallFetchResult {
-  return { ok: false, error }
+function failed(
+  error: SourceFetchError,
+  classification?: JakMallFetchClassification
+): JakMallFetchResult {
+  return classification
+    ? { ok: false, error, classification }
+    : { ok: false, error }
 }
 
 export async function fetchJakMallProductDocument(
@@ -478,11 +503,12 @@ export async function fetchJakMallProductDocument(
       }
 
       if (hop.kind === "status") {
-        return failed(
+        const error =
           hop.statusCode === 404 || hop.statusCode === 410
             ? "SOURCE_PRODUCT_NOT_FOUND"
             : "SOURCE_UNREACHABLE"
-        )
+
+        return failed(error, hop.classification)
       }
 
       if (hop.kind === "invalid-response") {

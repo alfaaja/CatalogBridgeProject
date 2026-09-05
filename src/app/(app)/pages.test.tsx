@@ -65,13 +65,14 @@ describe("Milestone 2 application pages", () => {
     expect($("body").text()).not.toContain("0 products")
   })
 
-  it("makes the unavailable import action explicit", () => {
+  it("renders the active single-product import form", () => {
     const $ = load(renderToStaticMarkup(<ImportProductPage />))
 
     expect($('label[for="jakmall-url"]').text()).toBe("Product URL")
-    expect($("button[disabled]").text()).toContain("Import Product")
-    expect($("[role=note]").text()).toContain("Import is not active yet")
-    expect($("[role=alert]")).toHaveLength(0)
+    expect($('input[name="jakmallUrl"]').is("[required]")).toBe(true)
+    expect($('input[name="assistedHtml"][type="file"]')).toHaveLength(1)
+    expect($("button[type=submit]").text()).toContain("Import Product")
+    expect($("body").text()).not.toContain("Import is not active yet")
   })
 
   it("names the keyboard-focusable product table scroll region", async () => {

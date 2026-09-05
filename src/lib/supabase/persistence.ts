@@ -11,6 +11,7 @@ const sensitiveKeyParts = new Set([
   "session",
   "token",
 ])
+const RAW_SOURCE_DATA_MAX_BYTES = 32 * 1024
 
 function containsSensitiveKey(value: unknown): boolean {
   if (
@@ -52,6 +53,14 @@ const safeJsonObjectSchema = jsonObjectSchema
   .refine((value) => !containsSensitiveKey(value), {
     message: "Sensitive request or session data is not allowed.",
   })
+  .refine(
+    (value) =>
+      Buffer.byteLength(JSON.stringify(value), "utf8") <=
+      RAW_SOURCE_DATA_MAX_BYTES,
+    {
+      message: "Raw source diagnostics must stay within 32 KiB.",
+    }
+  )
 
 const httpsUrlSchema = z
   .string()
