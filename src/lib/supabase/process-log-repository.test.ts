@@ -84,7 +84,7 @@ describe("process log repository", () => {
               evidenceBasis: "REVIEWER_ATTESTATION",
               method: "GUIDED_MANUAL",
               schemaVersion: 1,
-              sellerAction: "NON_PUBLISHING_SAVE",
+              sellerOutcome: "ARCHIVED_NON_PUBLISHED",
               snapshotFingerprint: "a".repeat(64),
             },
           },
@@ -117,7 +117,7 @@ describe("process log repository", () => {
     });
   });
 
-  it("ignores malformed confirmation details and requires matching prepared evidence", async () => {
+  it("requires matching prepared evidence and ignores malformed rows", async () => {
     const query: Record<string, ReturnType<typeof vi.fn>> = {};
     query.select = vi.fn(() => query);
     query.eq = vi.fn(() => query);
@@ -127,10 +127,10 @@ describe("process log repository", () => {
           {
             details: {
               event: "SELLER_CENTRE_REVIEWER_CONFIRMED",
-              evidenceBasis: "BUTTON_CLICK",
+              evidenceBasis: "REVIEWER_ATTESTATION",
               method: "GUIDED_MANUAL",
               schemaVersion: 1,
-              sellerAction: "PUBLISHED",
+              sellerAction: "NON_PUBLISHING_SAVE",
               snapshotFingerprint: "b".repeat(64),
             },
           },
@@ -148,6 +148,51 @@ describe("process log repository", () => {
       ),
     ).resolves.toEqual({
       evidence: { prepared: false, reviewerConfirmed: false },
+      ok: true,
+    });
+  });
+
+  it("keeps a matching legacy confirmation as reviewer evidence without exposing its old action semantic", async () => {
+    const query: Record<string, ReturnType<typeof vi.fn>> = {};
+    query.select = vi.fn(() => query);
+    query.eq = vi.fn(() => query);
+    query.contains = vi.fn(() =>
+      Promise.resolve({
+        data: [
+          {
+            details: {
+              attributeCount: 1,
+              event: "HANDOFF_PREPARED",
+              imageCount: 1,
+              method: "GUIDED_MANUAL",
+              offerMode: "BASE_LISTING",
+              schemaVersion: 1,
+              snapshotFingerprint: "c".repeat(64),
+            },
+          },
+          {
+            details: {
+              event: "SELLER_CENTRE_REVIEWER_CONFIRMED",
+              evidenceBasis: "REVIEWER_ATTESTATION",
+              method: "GUIDED_MANUAL",
+              schemaVersion: 1,
+              sellerAction: "NON_PUBLISHING_SAVE",
+              snapshotFingerprint: "c".repeat(64),
+            },
+          },
+        ],
+        error: null,
+      }),
+    );
+    createClientMock.mockResolvedValue({ from: vi.fn(() => query) });
+
+    await expect(
+      getShopeeHandoffEvidence(
+        "00000000-0000-4000-8000-000000000000",
+        "c".repeat(64),
+      ),
+    ).resolves.toEqual({
+      evidence: { prepared: true, reviewerConfirmed: true },
       ok: true,
     });
   });

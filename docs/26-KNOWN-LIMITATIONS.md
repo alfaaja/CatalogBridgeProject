@@ -31,7 +31,10 @@ Milestone 6 handoff limitations:
 - process-log idempotency is application-enforced for the single-reviewer PoC,
   without a database uniqueness constraint or transaction spanning validation
   and evidence insertion;
-- exact Seller Centre navigation and non-publishing control remain a manual QA
-  fact and must not be inferred from CatalogBridge evidence.
+- manual QA observed that Seller Centre accepted the product, it briefly
+  appeared Live, and the reviewer immediately archived/unlisted it; the final
+  retained state is `Belum Ditampilkan / Diarsipkan`;
+- the archived outcome does not prove an API upload, automated submission, or
+  publication success.
 
 Do not hide limitations in the demo. Explain the trade-off and what a production continuation would change.

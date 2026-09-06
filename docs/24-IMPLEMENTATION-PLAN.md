@@ -102,10 +102,14 @@ Do not fake completion.
 
 Selected implementation: guided manual handoff. For a current `READY` product,
 CatalogBridge builds a server-derived, fingerprinted handoff package and lets a
-reviewer attest to a retained non-publishing save in Seller Centre. Prepared and
+reviewer attest that the snapshot is retained in an archived, non-published
+Seller Centre state. Manual QA observed that Seller Centre accepted the product,
+it briefly appeared Live, and the reviewer immediately archived/unlisted it;
+the final retained state is `Belum Ditampilkan / Diarsipkan`. Prepared and
 reviewer-confirmed evidence is stored in `process_logs` for the current READY
 revision only. No migration, new product status, Shopee API, mass-upload file,
-or browser automation is part of this milestone.
+or browser automation is part of this milestone, and no publication success is
+claimed.
 
 ## Milestone 7 — P1 reliability/value-add
 

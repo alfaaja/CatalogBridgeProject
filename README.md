@@ -83,13 +83,15 @@ handoff package for manual entry in Shopee Seller Centre.
 
 `HANDOFF_PREPARED` means CatalogBridge prepared the current validated snapshot.
 `SELLER_CENTRE_REVIEWER_CONFIRMED` means a reviewer attested that the same
-snapshot was transferred, retained by a non-publishing Seller Centre save, and
-checked for required account-side shipping or service settings. This is
-reviewer evidence, not independent Shopee or API verification.
+snapshot was transferred and is currently retained in an archived,
+non-published state. During manual QA, Seller Centre accepted the product, it
+briefly appeared Live, and the reviewer immediately archived/unlisted it. Its
+final retained state is `Belum Ditampilkan / Diarsipkan`. This is reviewer
+evidence, not independent Shopee or API verification.
 
-CatalogBridge does not connect to Shopee, upload images, submit listings, or
-publish products. Seller Centre authentication, category reconciliation, image
-handling, shipping checks, and the non-publishing save remain manual steps.
+No API upload, automated submission, or publication success is claimed.
+Seller Centre authentication, category reconciliation, image handling,
+shipping checks, and archive/unlist handling remain manual steps.
 
 Project scope and sequencing are documented in
 [`docs/24-IMPLEMENTATION-PLAN.md`](docs/24-IMPLEMENTATION-PLAN.md).

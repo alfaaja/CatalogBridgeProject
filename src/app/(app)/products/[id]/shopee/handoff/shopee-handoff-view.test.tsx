@@ -166,7 +166,9 @@ describe("Shopee guided handoff view", () => {
       screen.getByLabelText(/current CatalogBridge values were transferred/i),
     ).toBeRequired();
     expect(
-      screen.getByLabelText(/accepted and retained the non-publishing save/i),
+      screen.getByLabelText(
+        /accepted the product.*Belum Ditampilkan.*Diarsipkan/i,
+      ),
     ).toBeRequired();
     expect(
       screen.getByLabelText(/shipping and service checks were completed/i),
@@ -188,9 +190,10 @@ describe("Shopee guided handoff view", () => {
     expect(screen.getByText("Manual handoff confirmed")).toBeInTheDocument();
     expect(
       screen.getByText(
-        /Reviewer confirmed that this snapshot was saved in Shopee Seller Centre using a non-publishing action/i,
+        /Reviewer confirmed that this snapshot was transferred to Shopee Seller Centre and is currently retained in an archived, non-published state/i,
       ),
     ).toBeInTheDocument();
+    expect(document.body.textContent).not.toMatch(/non-publishing action/i);
     expect(
       screen.queryByRole("button", { name: "Confirm manual handoff" }),
     ).not.toBeInTheDocument();

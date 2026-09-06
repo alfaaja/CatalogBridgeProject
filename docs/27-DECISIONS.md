@@ -67,5 +67,8 @@ entry in Seller Centre and records prepared and reviewer-confirmed evidence in
 Why: no official mass-upload contract or legitimate API access was verified for
 the deadline path. The READY revision participates in the fingerprint so old
 evidence cannot become current again after reopening and re-readying a product.
-Reviewer confirmation remains explicitly distinct from independent Shopee
-verification or publication.
+Manual QA observed that Seller Centre accepted the product, it briefly appeared
+Live, and the reviewer immediately archived/unlisted it. The final retained
+state is `Belum Ditampilkan / Diarsipkan`. Reviewer confirmation records that
+archived, non-published outcome and remains explicitly distinct from API
+verification, automated submission, or publication success.

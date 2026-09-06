@@ -14,7 +14,7 @@ export type ShopeeHandoffActionState = Readonly<{
 const prepareSchema = z.object({}).strict();
 const confirmationSchema = z
   .object({
-    nonPublishingSaveRetained: z.literal("true"),
+    archivedNonPublishedRetained: z.literal("true"),
     shippingChecksCompleted: z.literal("true"),
     valuesTransferred: z.literal("true"),
   })
@@ -160,7 +160,7 @@ export async function confirmSellerCentreHandoffAction(
       evidenceBasis: "REVIEWER_ATTESTATION",
       method: "GUIDED_MANUAL",
       schemaVersion: 1,
-      sellerAction: "NON_PUBLISHING_SAVE",
+      sellerOutcome: "ARCHIVED_NON_PUBLISHED",
       snapshotFingerprint: current.manifest.snapshotFingerprint,
     },
     message: "Manual Seller Centre handoff confirmed.",

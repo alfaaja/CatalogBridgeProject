@@ -104,10 +104,13 @@ Evidence remains snapshot-specific:
 - `HANDOFF_PREPARED` means CatalogBridge constructed the current validated
   package.
 - `SELLER_CENTRE_REVIEWER_CONFIRMED` means the reviewer explicitly attested
-  that the same values were transferred, a non-publishing save was accepted and
-  retained, and required account-side shipping/service checks were completed.
+  that the same values were transferred, the product is currently retained in
+  an archived, non-published state, and required account-side shipping/service
+  checks were completed.
 
 The second event is reviewer attestation, not independent verification by
-Shopee. It does not mean uploaded, submitted, synchronized, or published. The
-exact current Seller Centre route and non-publishing control must be recorded
-from manual QA rather than guessed in application code or documentation.
+Shopee. Manual QA observed that Seller Centre accepted the product, it briefly
+appeared Live, and the reviewer immediately archived/unlisted it. Its final
+retained state is `Belum Ditampilkan / Diarsipkan`. This observation does not
+claim an API upload, automated submission, synchronization, or publication
+success.

@@ -42,6 +42,14 @@ const confirmedEvidenceSchema = z
     ...evidenceBase,
     event: z.literal("SELLER_CENTRE_REVIEWER_CONFIRMED"),
     evidenceBasis: z.literal("REVIEWER_ATTESTATION"),
+    sellerOutcome: z.literal("ARCHIVED_NON_PUBLISHED"),
+  })
+  .strict();
+const legacyConfirmedEvidenceSchema = z
+  .object({
+    ...evidenceBase,
+    event: z.literal("SELLER_CENTRE_REVIEWER_CONFIRMED"),
+    evidenceBasis: z.literal("REVIEWER_ATTESTATION"),
     sellerAction: z.literal("NON_PUBLISHING_SAVE"),
   })
   .strict();
@@ -106,7 +114,10 @@ export async function getShopeeHandoffEvidence(
       if (!row || typeof row !== "object" || !("details" in row)) continue;
       if (preparedEvidenceSchema.safeParse(row.details).success)
         prepared = true;
-      if (confirmedEvidenceSchema.safeParse(row.details).success)
+      if (
+        confirmedEvidenceSchema.safeParse(row.details).success ||
+        legacyConfirmedEvidenceSchema.safeParse(row.details).success
+      )
         confirmed = true;
     }
 

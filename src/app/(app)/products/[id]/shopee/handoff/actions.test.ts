@@ -63,7 +63,7 @@ const manifest = {
 function confirmationForm(overrides: Record<string, string> = {}) {
   const formData = new FormData();
   formData.set("valuesTransferred", "true");
-  formData.set("nonPublishingSaveRetained", "true");
+  formData.set("archivedNonPublishedRetained", "true");
   formData.set("shippingChecksCompleted", "true");
   for (const [name, value] of Object.entries(overrides)) {
     formData.set(name, value);
@@ -182,7 +182,7 @@ describe("Shopee guided handoff actions", () => {
         evidenceBasis: "REVIEWER_ATTESTATION",
         method: "GUIDED_MANUAL",
         schemaVersion: 1,
-        sellerAction: "NON_PUBLISHING_SAVE",
+        sellerOutcome: "ARCHIVED_NON_PUBLISHED",
         snapshotFingerprint: "a".repeat(64),
       },
       message: "Manual Seller Centre handoff confirmed.",
@@ -195,6 +195,24 @@ describe("Shopee guided handoff actions", () => {
     expect(logged).not.toContain("OMHA5ISV");
     expect(logged).not.toContain("79900");
     expect(logged).not.toContain("static.jakmall.id");
+    expect(logged).not.toContain("sellerAction");
+  });
+
+  it("rejects a seller outcome supplied by the client", async () => {
+    mocks.loadHandoff.mockResolvedValue({
+      evidence: { prepared: true, reviewerConfirmed: false },
+      manifest,
+      ok: true,
+    });
+
+    const result = await confirmSellerCentreHandoffAction(
+      productId,
+      {},
+      confirmationForm({ sellerOutcome: "ARCHIVED_NON_PUBLISHED" }),
+    );
+
+    expect(result).toMatchObject({ status: "error" });
+    expect(mocks.appendLog).not.toHaveBeenCalled();
   });
 
   it("does not duplicate an existing confirmation for the current snapshot", async () => {

@@ -184,8 +184,9 @@ export function ShopeeHandoffView({
                     Manual handoff confirmed
                   </h2>
                   <p className="mt-1 text-sm">
-                    Reviewer confirmed that this snapshot was saved in Shopee
-                    Seller Centre using a non-publishing action.
+                    Reviewer confirmed that this snapshot was transferred to
+                    Shopee Seller Centre and is currently retained in an
+                    archived, non-published state.
                   </p>
                 </div>
               </div>
@@ -438,12 +439,13 @@ export function ShopeeHandoffView({
                 <label className="flex items-start gap-3 text-sm">
                   <input
                     className="mt-1"
-                    name="nonPublishingSaveRetained"
+                    name="archivedNonPublishedRetained"
                     required
                     type="checkbox"
                     value="true"
                   />
-                  Seller Centre accepted and retained the non-publishing save.
+                  Seller Centre accepted the product, and it is currently
+                  retained under Belum Ditampilkan with status Diarsipkan.
                 </label>
                 <label className="flex items-start gap-3 text-sm">
                   <input
