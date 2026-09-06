@@ -113,14 +113,39 @@ claimed.
 
 ## Milestone 7 — P1 reliability/value-add
 
-Only after P0 works:
+Implemented as a bounded reliability proof after the M0–M6 path was stable:
 
-- duplicate detection;
-- markup configuration;
-- import history;
-- batch URL input;
-- retry;
-- stable image storage if needed.
+- imported a second distinct real public JakMall product through the unchanged
+  assisted-HTML pipeline;
+- verified Product Review, local Shopee Mapping, persisted `READY` state, and
+  duplicate rejection while preserving the existing JEP product;
+- added authenticated `/history` using real RLS-protected `process_logs` joined
+  to the owned parent product;
+- limited History to the newest 100 activities with deterministic Jakarta
+  timestamps, explicit business labels, and Product Review links;
+- retained warning events and the exact M6 handoff evidence wording without
+  turning it into upload, publication, synchronization, or Shopee verification
+  claims.
+
+The second product was not transferred to Seller Centre. M7 adds no parser
+change, migration, index, dependency, retry, batch input, pricing automation,
+or image storage.
+
+Verified second-product evidence:
+
+- canonical URL:
+  `https://www.jakmall.com/rumauma-home/rumauma-glass-water-bottle-380ml-bpa-free-botol-minum-olahraga-putih`;
+- product ID: `cee3520e-ff91-4edf-956b-4a08fb243c8b`;
+- title: `RUMAUMA Glass Water Bottle 380ML BPA Free Botol Minum Olahraga - Putih`;
+- source price: Rp25,000; one trusted product image was persisted;
+- the public page reported stock availability without an exact quantity. The
+  imported quantity remained unknown until the reviewer made the local stock
+  decision;
+- one base variant was persisted without an invented option mapping. The
+  structured offer SKU was `A100416AY`, while the page also displayed
+  `Kode SKU 8223205140161`; the source product identifier remained unavailable;
+- Dashboard moved from one to two products. A repeat import was rejected as a
+  duplicate and the total remained two.
 
 ## Milestone 8 — Hardening & deployment
 

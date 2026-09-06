@@ -22,6 +22,50 @@ type HandoffEvidenceResult =
       ok: false;
     }>;
 
+export type ProcessHistoryStatus =
+  | "started"
+  | "success"
+  | "warning"
+  | "failed";
+
+export type ProcessHistoryEvent = Readonly<{
+  id: string;
+  message: string;
+  occurredAt: string;
+  product: Readonly<{
+    id: string;
+    title: string | null;
+  }>;
+  stage: string;
+  status: ProcessHistoryStatus;
+}>;
+
+type ProcessHistoryResult =
+  | Readonly<{ events: readonly ProcessHistoryEvent[]; ok: true }>
+  | Readonly<{ error: "DATABASE_READ_FAILED"; ok: false }>;
+
+const PROCESS_HISTORY_LIMIT = 100;
+const PROCESS_HISTORY_SELECT =
+  "id,product_id,stage,status,message,created_at,product:products!process_logs_product_id_fkey!inner(id,title)";
+const processHistoryRowSchema = z
+  .object({
+    created_at: z.iso.datetime({ offset: true }),
+    id: z.uuid(),
+    message: z.string().trim().min(1).max(500),
+    product: z
+      .object({
+        id: z.uuid(),
+        title: z.string().trim().min(1).max(100_000).nullable(),
+      })
+      .strict(),
+    product_id: z.uuid(),
+    stage: z.string().trim().min(1).max(100),
+    status: z.enum(["started", "success", "warning", "failed"]),
+  })
+  .strict()
+  .refine((row) => row.product_id === row.product.id);
+const processHistoryRowsSchema = z.array(processHistoryRowSchema);
+
 const fingerprintSchema = z.string().regex(/^[a-f0-9]{64}$/u);
 const evidenceBase = {
   method: z.literal("GUIDED_MANUAL"),
@@ -77,6 +121,42 @@ export async function appendProcessLog(
     return error ? { ok: false, error: "DATABASE_WRITE_FAILED" } : { ok: true };
   } catch {
     return { ok: false, error: "DATABASE_WRITE_FAILED" };
+  }
+}
+
+export async function listProcessHistory(): Promise<ProcessHistoryResult> {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("process_logs")
+      .select(PROCESS_HISTORY_SELECT)
+      .order("created_at", { ascending: false })
+      .order("id", { ascending: false })
+      .limit(PROCESS_HISTORY_LIMIT);
+
+    if (error) return { error: "DATABASE_READ_FAILED", ok: false };
+
+    const parsedRows = processHistoryRowsSchema.safeParse(data);
+    if (!parsedRows.success) {
+      return { error: "DATABASE_READ_FAILED", ok: false };
+    }
+
+    return {
+      events: parsedRows.data.map((row) => ({
+        id: row.id,
+        message: row.message,
+        occurredAt: row.created_at,
+        product: {
+          id: row.product.id,
+          title: row.product.title,
+        },
+        stage: row.stage,
+        status: row.status,
+      })),
+      ok: true,
+    };
+  } catch {
+    return { error: "DATABASE_READ_FAILED", ok: false };
   }
 }
 

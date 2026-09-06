@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest"
 import { config } from "./proxy"
 
 describe("application Proxy matcher", () => {
-  it.each(["/", "/products", "/products/source-id", "/import", "/import/new", "/login"])(
+  it.each(["/", "/products", "/products/source-id", "/import", "/import/new", "/history", "/history/recent", "/login"])(
     "protects or manages %s",
     (url) => {
       expect(

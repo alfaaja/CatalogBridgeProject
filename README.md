@@ -76,22 +76,24 @@ npm run build
 
 ## Current milestone
 
-Milestone 6 adds an authenticated guided manual handoff at
-`/products/[id]/shopee/handoff`. CatalogBridge rebuilds the current persisted
-`READY` draft on the server, validates it, and prepares a snapshot-scoped
-handoff package for manual entry in Shopee Seller Centre.
+Milestone 7 proves the existing pipeline with a second distinct public JakMall
+product and adds the authenticated Process History page at `/history`.
 
-`HANDOFF_PREPARED` means CatalogBridge prepared the current validated snapshot.
-`SELLER_CENTRE_REVIEWER_CONFIRMED` means a reviewer attested that the same
-snapshot was transferred and is currently retained in an archived,
-non-published state. During manual QA, Seller Centre accepted the product, it
-briefly appeared Live, and the reviewer immediately archived/unlisted it. Its
-final retained state is `Belum Ditampilkan / Diarsipkan`. This is reviewer
-evidence, not independent Shopee or API verification.
+The RUMAUMA 380 ml bottle was imported through the existing assisted-HTML path
+without parser or normalization changes. The persisted record kept the real
+Rp25,000 source price, one trusted product image, the base-variant
+representation, and source uncertainty where identifiers or stock were not
+confirmed. Product Review and Shopee Mapping were completed locally and the
+product remained `READY` after reload. Repeating the canonical URL was rejected
+as a duplicate without increasing the two-product total; the original JEP
+record remained intact.
 
-No API upload, automated submission, or publication success is claimed.
-Seller Centre authentication, category reconciliation, image handling,
-shipping checks, and archive/unlist handling remain manual steps.
+Process History uses the existing RLS-protected `process_logs` data, shows up to
+the 100 newest activities across the reviewer's products, and links each event
+to Product Review. It has no filters or pagination. These records are
+operational evidence, not a transactional audit ledger. Shopee handoff entries
+still mean package preparation or reviewer confirmation only, never API upload
+or publication proof.
 
 Project scope and sequencing are documented in
 [`docs/24-IMPLEMENTATION-PLAN.md`](docs/24-IMPLEMENTATION-PLAN.md).

@@ -37,4 +37,23 @@ Milestone 6 handoff limitations:
 - the archived outcome does not prove an API upload, automated submission, or
   publication success.
 
+Milestone 7 reliability/history limitations:
+
+- the second real-product proof used the assisted-HTML fallback because direct
+  server acquisition was blocked by JakMall's WAF; browser automation was not
+  added;
+- the imported RUMAUMA bottle retained one trusted product image and a base
+  variant with honest review warnings; incomplete or conflicting source
+  identifiers were not invented;
+- Process History shows only the latest 100 persisted activities and has no
+  pagination, filtering, export, retry, or auto-refresh;
+- the existing `(product_id, created_at desc, id)` index favors per-product
+  history rather than the bounded cross-product sort; this is acceptable only
+  for the current single-reviewer PoC volume;
+- process logs are operational evidence and can be incomplete if a business
+  write succeeds but its best-effort log append fails; they are not a
+  transactional audit ledger;
+- History continues to show reviewer-confirmed M6 handoff evidence as
+  attestation, not independent Shopee or publication verification.
+
 Do not hide limitations in the demo. Explain the trade-off and what a production continuation would change.

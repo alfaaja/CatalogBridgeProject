@@ -2,6 +2,7 @@
 
 import type { LucideIcon } from "lucide-react"
 import {
+  History,
   Import,
   LayoutDashboard,
   LogOut,
@@ -37,6 +38,7 @@ const navigation: readonly NavigationItem[] = [
   { href: "/", icon: LayoutDashboard, label: "Dashboard" },
   { href: "/products", icon: Package, label: "Products" },
   { href: "/import", icon: Import, label: "Import Product" },
+  { href: "/history", icon: History, label: "History" },
 ]
 
 function isNavigationItemActive(pathname: string, href: string) {

@@ -23,7 +23,7 @@ describe("Supabase session proxy", () => {
     createServerClientMock.mockReset()
   })
 
-  it.each(["/", "/products", "/products/source-id", "/import"])(
+  it.each(["/", "/products", "/products/source-id", "/import", "/history"])(
     "redirects an unauthenticated %s request to login",
     async (pathname) => {
     createServerClientMock.mockReturnValue({

@@ -62,4 +62,13 @@ describe("Milestone 1 migration contract", () => {
       /grant update \([^;]*\) on public\.(product_images|product_variants)/u
     )
   })
+
+  it("keeps process-log reads scoped through the authenticated owned product", () => {
+    expect(compactMigration).toContain(
+      "create policy process_logs_select_owned on public.process_logs for select to authenticated using ( exists ( select 1 from public.products where products.id = process_logs.product_id and products.owner_id = (select auth.uid()) ) );"
+    )
+    expect(compactMigration).not.toContain(
+      "create policy process_logs_select_owned on public.process_logs for select to anon"
+    )
+  })
 })
