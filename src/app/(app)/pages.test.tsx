@@ -43,7 +43,7 @@ vi.mock("next/navigation", () => ({
   notFound: notFoundMock,
 }))
 
-import DashboardPage from "./page"
+import DashboardPage from "./dashboard/page"
 import ProcessHistoryPage from "./history/page"
 import ImportProductPage from "./import/page"
 import ProductReviewPage from "./products/[id]/page"

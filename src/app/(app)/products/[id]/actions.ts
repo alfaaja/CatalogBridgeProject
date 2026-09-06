@@ -150,7 +150,7 @@ function variantChanges(
 function revalidateReviewPaths(productId: string) {
   revalidatePath(`/products/${productId}`)
   revalidatePath("/products")
-  revalidatePath("/")
+  revalidatePath("/dashboard")
 }
 
 export async function saveProductReviewAction(

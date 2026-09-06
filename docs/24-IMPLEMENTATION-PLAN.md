@@ -157,6 +157,22 @@ Verified second-product evidence:
 - README/limitations/cost/AI disclosure;
 - demo rehearsal.
 
+Current bounded product-polish slice:
+
+- add a restrained public `/` landing page with truthful workflow copy;
+- move the existing authenticated Dashboard route to `/dashboard` so the public
+  entry point and signed-in destination are unambiguous;
+- add Supabase email/password registration at `/register`, covering both
+  immediate-session and email-confirmation outcomes without a profile table;
+- preserve existing RLS ownership and all M0–M7 application behavior;
+- verify a fresh empty account and Account A/Account B isolation after new-user
+  signup is enabled in the intended Supabase project.
+
+Latest local QA reached the provider and received the safe registration-disabled
+outcome. Enabling signup is an external project configuration step; the
+two-account RLS browser proof is therefore still pending and must not be inferred
+from unit tests.
+
 ## Stop rule
 
 If a later milestone threatens the working end-to-end demo, stop and preserve the last verified path.

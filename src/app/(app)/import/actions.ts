@@ -75,7 +75,7 @@ export async function importProductAction(
     return { error: result.message }
   }
 
-  revalidatePath("/")
+  revalidatePath("/dashboard")
   revalidatePath("/products")
 
   return {

@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import Link from "next/link"
 
 import { publicAuthErrorMessage } from "@/lib/supabase/auth"
 
@@ -25,7 +26,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           Reviewer sign in
         </h1>
         <p className="mt-3 text-sm leading-6 text-muted-foreground">
-          Use the email and password for the configured reviewer account.
+          Use your CatalogBridge email and password to continue.
         </p>
 
         {error ? (
@@ -74,8 +75,14 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           </button>
         </form>
 
-        <p className="mt-8 border-t pt-5 text-xs leading-5 text-muted-foreground">
-          Account creation and password recovery are managed outside this PoC.
+        <p className="mt-8 border-t pt-5 text-sm text-muted-foreground">
+          Don&apos;t have an account?{" "}
+          <Link
+            className="font-medium text-foreground underline underline-offset-4 outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            href="/register"
+          >
+            Create one
+          </Link>
         </p>
       </section>
     </main>

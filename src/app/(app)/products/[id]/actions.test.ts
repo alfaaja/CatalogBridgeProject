@@ -190,7 +190,7 @@ describe("product review actions", () => {
     )
     expect(revalidatePathMock).toHaveBeenCalledWith(`/products/${productId}`)
     expect(revalidatePathMock).toHaveBeenCalledWith("/products")
-    expect(revalidatePathMock).toHaveBeenCalledWith("/")
+    expect(revalidatePathMock).toHaveBeenCalledWith("/dashboard")
   })
 
   it("does not update or log no-op parent saves", async () => {

@@ -16,7 +16,11 @@ export default async function AuthenticatedAppLayout({
   const supabase = await createClient()
   const { data, error } = await supabase.auth.getClaims()
 
-  if (error || !data?.claims || data.claims.is_anonymous === true) {
+  if (
+    error ||
+    typeof data?.claims?.sub !== "string" ||
+    data.claims.is_anonymous === true
+  ) {
     redirect("/login")
   }
 

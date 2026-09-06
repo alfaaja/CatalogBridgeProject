@@ -40,7 +40,7 @@ function paths(productId: string) {
   revalidatePath(`/products/${productId}/shopee`)
   revalidatePath(`/products/${productId}`)
   revalidatePath("/products")
-  revalidatePath("/")
+  revalidatePath("/dashboard")
 }
 
 function draftInput(draft: ShopeeDraft): ShopeeDraftInput {

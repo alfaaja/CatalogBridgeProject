@@ -53,12 +53,21 @@ The endpoint returns `200` when Supabase is reachable and `503` when its public
 configuration is invalid or the upstream service cannot be reached. Public
 responses do not include configuration values or raw exceptions.
 
-## Reviewer access
+## Account access
 
-CatalogBridge uses one manually created Supabase email/password account for the
-hosted reviewer. Public signup and anonymous sign-in must remain disabled in
-the Supabase project. The application does not use or require a service-role
-key.
+CatalogBridge uses Supabase email/password authentication. The public landing
+page is available at `/`, sign-in at `/login`, and account registration at
+`/register`. Authenticated users continue into `/dashboard`; product, import,
+history, review, mapping, and handoff routes remain session-protected.
+
+Enable the Supabase email provider and new-user signup for the intended project
+before testing registration. Configure the Supabase Site URL and allowed
+redirect URLs for the deployed CatalogBridge origin so confirmation links do
+not return to a local or stale host. CatalogBridge supports both legitimate
+provider outcomes: an immediately authenticated signup continues to Dashboard,
+while a signup requiring email confirmation shows a neutral check-email state.
+The application does not use or require a service-role key, and ownership
+remains derived from the authenticated user through RLS.
 
 Versioned schema migrations are under `supabase/migrations`. Apply pending
 migrations to the intended Supabase project before testing writes. Generated
@@ -76,8 +85,16 @@ npm run build
 
 ## Current milestone
 
-Milestone 7 proves the existing pipeline with a second distinct public JakMall
-product and adds the authenticated Process History page at `/history`.
+The current bounded Milestone 8 polish slice adds a truthful public landing
+page, self-service email/password registration, and session-aware routing. It
+does not add profiles, roles, OAuth, password recovery, onboarding, schema
+changes, or new application features. At the latest local QA, the Supabase
+project returned `registration unavailable`; enable new-user signup before
+completing the fresh-account and two-account RLS browser checks.
+
+Milestone 7 previously proved the existing pipeline with a second distinct
+public JakMall product and added the authenticated Process History page at
+`/history`.
 
 The RUMAUMA 380 ml bottle was imported through the existing assisted-HTML path
 without parser or normalization changes. The persisted record kept the real

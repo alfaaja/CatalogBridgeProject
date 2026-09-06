@@ -57,4 +57,16 @@ describe("AppSidebar", () => {
     expect(link.attr("aria-current")).toBe("page")
     expect(link.attr("data-active")).toBe("true")
   })
+
+  it("links the authenticated brand and Dashboard item to /dashboard", () => {
+    pathnameMock.mockReturnValue("/dashboard")
+
+    const $ = load(
+      renderToStaticMarkup(<AppSidebar reviewerEmail="reviewer@example.com" />)
+    )
+    const dashboardLinks = $('a[href="/dashboard"]')
+
+    expect(dashboardLinks).toHaveLength(2)
+    expect(dashboardLinks.filter('[aria-current="page"]')).toHaveLength(1)
+  })
 })

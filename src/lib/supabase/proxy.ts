@@ -17,6 +17,11 @@ function redirectWithSessionCookies(
     redirectResponse.cookies.set(cookie)
   })
 
+  for (const header of ["Cache-Control", "Expires", "Pragma"] as const) {
+    const value = response.headers.get(header)
+    if (value) redirectResponse.headers.set(header, value)
+  }
+
   return redirectResponse
 }
 
@@ -28,7 +33,7 @@ export async function updateSession(request: NextRequest) {
       getAll() {
         return request.cookies.getAll()
       },
-      setAll(cookiesToSet) {
+      setAll(cookiesToSet, headers) {
         cookiesToSet.forEach(({ name, value }) => {
           request.cookies.set(name, value)
         })
@@ -37,21 +42,28 @@ export async function updateSession(request: NextRequest) {
         cookiesToSet.forEach(({ name, value, options }) => {
           response.cookies.set(name, value, options)
         })
-      },
-    },
+        Object.entries(headers).forEach(([name, value]) =>
+          response.headers.set(name, value)
+        )
+      }
+    }
   })
 
   const { data, error } = await supabase.auth.getClaims()
   const isAuthenticated =
-    !error && Boolean(data?.claims) && data?.claims?.is_anonymous !== true
-  const isLoginPage = request.nextUrl.pathname === "/login"
+    !error &&
+    typeof data?.claims?.sub === "string" &&
+    data.claims.is_anonymous !== true
+  const isPublicPage = new Set(["/", "/login", "/register"]).has(
+    request.nextUrl.pathname
+  )
 
-  if (!isAuthenticated && !isLoginPage) {
+  if (!isAuthenticated && !isPublicPage) {
     return redirectWithSessionCookies(request, response, "/login")
   }
 
-  if (isAuthenticated && isLoginPage) {
-    return redirectWithSessionCookies(request, response, "/")
+  if (isAuthenticated && isPublicPage) {
+    return redirectWithSessionCookies(request, response, "/dashboard")
   }
 
   return response

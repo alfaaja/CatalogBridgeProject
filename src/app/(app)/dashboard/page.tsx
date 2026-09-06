@@ -1,5 +1,5 @@
-import type { Metadata } from "next"
-import Link from "next/link"
+import type { Metadata } from "next";
+import Link from "next/link";
 import {
   AlertCircle,
   AlertTriangle,
@@ -7,28 +7,25 @@ import {
   Package,
   Plus,
   XCircle,
-} from "lucide-react"
+} from "lucide-react";
 
-import { PageHeader } from "@/components/page-header"
-import {
-  ProductEmptyState,
-  ProductTable,
-} from "@/components/product-table"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { buttonVariants } from "@/components/ui/button"
-import { buildDashboardSummary } from "@/lib/product-presentation"
+import { PageHeader } from "@/components/page-header";
+import { ProductEmptyState, ProductTable } from "@/components/product-table";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { buttonVariants } from "@/components/ui/button";
+import { buildDashboardSummary } from "@/lib/product-presentation";
 import {
   listProductSummaries,
   type ProductSummary,
-} from "@/lib/supabase/product-repository"
+} from "@/lib/supabase/product-repository";
 
 export const metadata: Metadata = {
   title: "Dashboard | CatalogBridge",
-}
+};
 
 type DashboardPageProps = {
-  searchParams: Promise<{ auth_error?: string | string[] }>
-}
+  searchParams: Promise<{ auth_error?: string | string[] }>;
+};
 
 export default async function DashboardPage({
   searchParams,
@@ -36,7 +33,7 @@ export default async function DashboardPage({
   const [productsResult, { auth_error: authError }] = await Promise.all([
     listProductSummaries(),
     searchParams,
-  ])
+  ]);
 
   return (
     <div className="mx-auto w-full max-w-[1600px] px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
@@ -75,15 +72,15 @@ export default async function DashboardPage({
         <DashboardContent products={productsResult.products} />
       )}
     </div>
-  )
+  );
 }
 
 function DashboardContent({
   products,
 }: {
-  products: readonly ProductSummary[]
+  products: readonly ProductSummary[];
 }) {
-  const summary = buildDashboardSummary(products)
+  const summary = buildDashboardSummary(products);
   const metrics = [
     {
       label: "Total Products",
@@ -109,7 +106,7 @@ function DashboardContent({
       icon: XCircle,
       iconClassName: "text-rose-700",
     },
-  ] as const
+  ] as const;
 
   return (
     <>
@@ -118,10 +115,7 @@ function DashboardContent({
         className="mt-6 grid gap-px overflow-hidden rounded-lg border bg-border sm:grid-cols-2 xl:grid-cols-4"
       >
         {metrics.map((metric) => (
-          <div
-            className="bg-background p-4"
-            key={metric.label}
-          >
+          <div className="bg-background p-4" key={metric.label}>
             <div className="flex items-center justify-between gap-3">
               <dt className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
                 {metric.label}
@@ -168,5 +162,5 @@ function DashboardContent({
         )}
       </section>
     </>
-  )
+  );
 }

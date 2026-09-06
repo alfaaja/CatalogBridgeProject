@@ -35,16 +35,14 @@ type NavigationItem = Readonly<{
 }>
 
 const navigation: readonly NavigationItem[] = [
-  { href: "/", icon: LayoutDashboard, label: "Dashboard" },
+  { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { href: "/products", icon: Package, label: "Products" },
   { href: "/import", icon: Import, label: "Import Product" },
   { href: "/history", icon: History, label: "History" },
 ]
 
 function isNavigationItemActive(pathname: string, href: string) {
-  return href === "/"
-    ? pathname === href
-    : pathname === href || pathname.startsWith(`${href}/`)
+  return pathname === href || pathname.startsWith(`${href}/`)
 }
 
 function reviewerInitials(email: string) {
@@ -61,7 +59,7 @@ export function AppSidebar({ reviewerEmail }: { reviewerEmail: string }) {
         <Link
           aria-label="CatalogBridge home"
           className="flex min-h-10 items-center gap-3 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
-          href="/"
+          href="/dashboard"
           onClick={() => setOpenMobile(false)}
         >
           <span className="flex size-9 shrink-0 items-center justify-center rounded-md bg-slate-900 text-white">

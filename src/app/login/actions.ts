@@ -14,14 +14,14 @@ export async function login(formData: FormData) {
     redirect("/login?error=sign_in_failed")
   }
 
-  redirect("/")
+  redirect("/dashboard")
 }
 
 export async function logout() {
   const result = await signOutReviewer()
 
   if (!result.ok) {
-    redirect("/?auth_error=sign_out_failed")
+    redirect("/dashboard?auth_error=sign_out_failed")
   }
 
   redirect("/login")
