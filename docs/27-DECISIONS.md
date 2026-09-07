@@ -72,3 +72,14 @@ Live, and the reviewer immediately archived/unlisted it. The final retained
 state is `Belum Ditampilkan / Diarsipkan`. Reviewer confirmation records that
 archived, non-published outcome and remains explicitly distinct from API
 verification, automated submission, or publication success.
+
+## ADR-012 — Local authenticated Shopee runner
+
+Decision: READY snapshots may be queued in Supabase and processed by an
+independent local Node/Playwright runner authenticated as the same CatalogBridge
+user. Shopee session state remains in a local persistent Chromium profile.
+
+Why: Vercel is not an appropriate home for a long-lived authenticated Seller
+Centre browser. RLS can preserve ownership without a service-role key, while the
+reviewer can complete legitimate login/CAPTCHA/2FA. The terminal action is only
+Save & Archive; unverified controls fail closed and Manual Handoff remains.

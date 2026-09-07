@@ -3,40 +3,40 @@ import {
   CheckCircle2,
   PackageSearch,
   ShieldCheck,
-  Waypoints
-} from "lucide-react"
-import type { Metadata } from "next"
-import Link from "next/link"
+  Waypoints,
+} from "lucide-react";
+import type { Metadata } from "next";
+import Link from "next/link";
 
-import { buttonVariants } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "CatalogBridge | JakMall to Shopee product preparation",
   description:
-    "Import public JakMall product data, review it, and prepare a verified manual Shopee Seller Centre handoff."
-}
+    "Import public JakMall product data, review it, and prepare a verified manual Shopee Seller Centre handoff.",
+};
 
 const workflow = [
   {
     description:
       "Extract real product information from public JakMall product pages.",
     icon: PackageSearch,
-    title: "Import from JakMall"
+    title: "Import from JakMall",
   },
   {
     description:
       "Check pricing, stock, images, variants, and required Shopee fields before continuing.",
     icon: CheckCircle2,
-    title: "Review before listing"
+    title: "Review before listing",
   },
   {
     description:
-      "Build a reviewer-verified Seller Centre handoff without unsafe credential or browser-session automation.",
+      "Build a reviewer-verified Seller Centre handoff, with an optional local runner that keeps seller authentication on your device.",
     icon: ShieldCheck,
-    title: "Prepare for Shopee"
-  }
-] as const
+    title: "Prepare for Shopee",
+  },
+] as const;
 
 export default function LandingPage() {
   return (
@@ -95,7 +95,7 @@ export default function LandingPage() {
               <Link
                 className={buttonVariants({
                   className: "h-10 px-4",
-                  variant: "outline"
+                  variant: "outline",
                 })}
                 href="/login"
               >
@@ -169,5 +169,5 @@ export default function LandingPage() {
         </div>
       </section>
     </main>
-  )
+  );
 }

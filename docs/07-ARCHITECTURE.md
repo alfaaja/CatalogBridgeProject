@@ -25,6 +25,26 @@ Supabase
    └── Storage (when needed)
 ```
 
+## Local Shopee automation boundary
+
+```mermaid
+flowchart LR
+  J[Public JakMall] --> W[CatalogBridge Web<br/>Vercel]
+  W --> S[(Supabase Auth + Postgres)]
+  S --> Q[Owned upload job]
+  Q --> R[Local Shopee runner<br/>Node + Playwright]
+  R --> C[Shopee Seller Centre]
+  C -. login / CAPTCHA / 2FA .-> U[Reviewer]
+  R -. local cookies only .-> P[Local persistent browser profile]
+```
+
+The web action creates an allowlisted snapshot only after reloading the owned
+persisted READY state. The local runner signs in as that same CatalogBridge user,
+so grants and RLS—not a service-role key—govern polling and status updates.
+Shopee credentials, cookies, and session storage remain local. The runner is
+single-job and fail-closed; automatic publishing is not represented in its state
+machine.
+
 ## Suggested module boundaries
 
 ```text
@@ -78,6 +98,11 @@ Use an adapter boundary so the PoC can support the most realistic verified path 
 - mass-upload template if available and verified;
 - official API if legitimate access exists;
 - browser automation only as a documented fallback, never for bypassing authentication controls.
+
+The implemented PoC fallback is an isolated local Playwright runner. Its exact
+Save & Archive and archived-state controls are evidence-backed; the remaining
+authenticated form fields must not be automated until their actual accessible
+controls have been observed.
 
 ## Scaling explanation
 

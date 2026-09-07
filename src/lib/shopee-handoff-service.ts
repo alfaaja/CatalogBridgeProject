@@ -2,6 +2,7 @@ import {
   buildShopeeHandoffManifest,
   type ShopeeHandoffManifest,
 } from "./shopee-handoff";
+import type { ProductReview } from "./product-review";
 import { buildShopeePreview } from "./shopee-draft";
 import {
   getShopeeHandoffEvidence,
@@ -16,6 +17,7 @@ export type CurrentShopeeHandoffResult =
       evidence: ShopeeHandoffEvidence;
       manifest: ShopeeHandoffManifest;
       ok: true;
+      product: ProductReview;
     }>
   | Readonly<{
       error:
@@ -91,5 +93,6 @@ export async function loadCurrentShopeeHandoff(
     evidence: evidenceResult.evidence,
     manifest: built.manifest,
     ok: true,
+    product: productResult.product,
   };
 }

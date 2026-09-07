@@ -42,3 +42,13 @@ Use only when stable hosted product-image copies are required. Do not upload eve
 ## SDK errors
 
 Convert provider-specific errors into domain/application error codes rather than rendering raw Supabase error objects to business users.
+
+## Shopee upload jobs
+
+`shopee_upload_jobs` stores one bounded, allowlisted READY snapshot per current
+fingerprint. Authenticated users can select owned rows, insert only the snapshot
+columns, and update only runner status/evidence columns. `owner_id` defaults from
+`auth.uid()` and cannot be supplied through the web action. RLS also verifies
+ownership of the parent product and its READY revision. There is no anon grant,
+delete grant, service-role client, credential field, cookie field, or published
+status.

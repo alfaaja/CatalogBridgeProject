@@ -42,3 +42,11 @@ yarn-error.log*
 next-env.d.ts
 
 supabase/.temp/
+
+# isolated local Shopee runner
+/runner/node_modules/
+/runner/dist/
+/runner/.catalogbridge/
+/.catalogbridge/
+/runner/evidence/
+/runner/tmp/

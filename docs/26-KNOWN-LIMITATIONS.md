@@ -56,4 +56,24 @@ Milestone 7 reliability/history limitations:
 - History continues to show reviewer-confirmed M6 handoff evidence as
   attestation, not independent Shopee or publication verification.
 
+Local Auto Send limitations:
+
+- the local runner must be installed and running; Vercel does not run
+  Playwright or retain a Shopee session;
+- Shopee login, CAPTCHA, 2FA, and device verification remain manual and are not
+  bypassed;
+- exact authenticated Add Product field selectors have not yet been captured,
+  so the current runner stops before form interaction with
+  `SELLER_FORM_NOT_VERIFIED`;
+- Seller Centre DOM changes, category/required-attribute changes, or missing
+  account-side shipping can require reviewer action;
+- image downloading is restricted to trusted JakMall HTTPS references and
+  validated temporary files; image use rights remain a business decision;
+- multi-variant automation requires both confirmed source option mapping and
+  deterministic labeled Seller Centre rows; DOM order alone is rejected;
+- dry-run is the default, and no automatic publishing/display state exists;
+- upload-job and process-log records are operational evidence, not tamper-proof
+  audit records;
+- Manual Handoff remains available whenever local automation cannot proceed.
+
 Do not hide limitations in the demo. Explain the trade-off and what a production continuation would change.

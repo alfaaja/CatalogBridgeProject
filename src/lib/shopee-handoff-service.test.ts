@@ -135,6 +135,7 @@ describe("current Shopee handoff service", () => {
       sourceMode: "BASE_VARIANT",
       stock: 5,
     });
+    expect(result.product).toBe(product);
     expect(mocks.getProduct).toHaveBeenCalledWith(productId);
     expect(mocks.getDraft).toHaveBeenCalledWith(productId);
     expect(mocks.getEvidence).toHaveBeenCalledWith(

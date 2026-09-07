@@ -16,7 +16,12 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { ProductReview } from "@/lib/product-review";
 import type { ShopeeDraft, ShopeePreview as Preview } from "@/lib/shopee-draft";
+import type { ShopeeUploadJob } from "@/lib/supabase/shopee-upload-job-repository";
 
+import {
+  queueShopeeUploadAction,
+  type AutoSendActionState,
+} from "./auto-send-actions";
 import {
   markProductReadyForShopeeAction,
   reopenShopeeMappingAction,
@@ -28,14 +33,26 @@ import { ShopeePreview } from "./shopee-preview";
 import { ShopeeReadinessChecklist } from "./shopee-readiness-checklist";
 
 const initial: ShopeeActionState = {};
+const autoSendInitial: AutoSendActionState = {};
+const automationLabels = {
+  AUTH_REQUIRED: "Authentication required",
+  FAILED: "Failed safely",
+  NEEDS_USER_ACTION: "Needs attention",
+  QUEUED: "Waiting for runner",
+  RUNNING: "Filling Seller Centre",
+  SAVED_ARCHIVED: "Saved as archived",
+  WAITING_FOR_RUNNER: "Runner connected",
+} as const;
 export function ShopeeMappingForm({
   draft,
   preview,
   product,
+  uploadJob = null,
 }: {
   draft: ShopeeDraft | null;
   preview: Preview;
   product: ProductReview;
+  uploadJob?: ShopeeUploadJob | null;
 }) {
   const editable = product.status === "REVIEW_REQUIRED";
   const ready = product.status === "READY";
@@ -50,6 +67,10 @@ export function ShopeeMappingForm({
   const [reopenState, reopenAction, reopening] = useActionState(
     reopenShopeeMappingAction.bind(null, product.id),
     initial,
+  );
+  const [autoSendState, autoSendAction, queueing] = useActionState(
+    queueShopeeUploadAction.bind(null, product.id),
+    autoSendInitial,
   );
   const blockers = preview.issues.filter(
     (issue) => issue.severity === "blocker",
@@ -69,8 +90,8 @@ export function ShopeeMappingForm({
         </p>
         <h1 className="mt-1 text-2xl font-semibold">Prepare for Shopee</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Build a locally validated draft. This does not upload, submit, or
-          publish anything.
+          Review the draft, then choose local automation or guided manual
+          handoff. The runner can only Save &amp; Archive.
         </p>
       </header>
       <div className="mt-6 grid items-start gap-8 xl:grid-cols-[minmax(0,1fr)_22rem]">
@@ -239,26 +260,82 @@ export function ShopeeMappingForm({
               </Button>
             </form>
           ) : ready ? (
-            <div className="flex flex-wrap items-center justify-between gap-3 border-t pt-6">
-              <div>
-                <p className="text-sm text-muted-foreground">
-                  {reopenState.message ??
-                    "READY drafts are read-only until reopened."}
+            <div className="space-y-5 border-t pt-6">
+              <section aria-labelledby="shopee-automation-title">
+                <h2
+                  className="text-lg font-semibold"
+                  id="shopee-automation-title"
+                >
+                  Shopee automation
+                </h2>
+                {uploadJob ? (
+                  <div className="mt-3 border-y py-4">
+                    <p className="font-medium">
+                      {automationLabels[uploadJob.status]}
+                    </p>
+                    {uploadJob.safeMessage ? (
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        {uploadJob.safeMessage}
+                      </p>
+                    ) : null}
+                    {uploadJob.safeErrorCode ? (
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        Code: {uploadJob.safeErrorCode}
+                      </p>
+                    ) : null}
+                  </div>
+                ) : (
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Queue this exact READY snapshot for the authenticated local
+                    runner. The runner defaults to dry-run and never publishes.
+                  </p>
+                )}
+                <p
+                  aria-live="polite"
+                  className="mt-3 text-sm text-muted-foreground"
+                >
+                  {autoSendState.message}
                 </p>
-                <form action={reopenAction} className="mt-3">
-                  <Button disabled={reopening} type="submit" variant="outline">
-                    <RotateCcw aria-hidden="true" />
-                    {reopening ? "Reopening..." : "Reopen Shopee Mapping"}
-                  </Button>
-                </form>
+              </section>
+              <div className="flex flex-wrap items-end justify-between gap-4">
+                <div>
+                  <p className="text-sm text-muted-foreground">
+                    {reopenState.message ??
+                      "READY drafts are read-only until reopened."}
+                  </p>
+                  <form action={reopenAction} className="mt-3">
+                    <Button
+                      disabled={reopening}
+                      type="submit"
+                      variant="outline"
+                    >
+                      <RotateCcw aria-hidden="true" />
+                      {reopening ? "Reopening..." : "Reopen Shopee Mapping"}
+                    </Button>
+                  </form>
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  <form action={autoSendAction}>
+                    <Button
+                      disabled={
+                        queueing ||
+                        Boolean(uploadJob && uploadJob.status !== "FAILED")
+                      }
+                      type="submit"
+                    >
+                      <ArrowRight aria-hidden="true" />
+                      {queueing ? "Queuing..." : "Auto Send to Shopee"}
+                    </Button>
+                  </form>
+                  <Link
+                    className={buttonVariants({ variant: "outline" })}
+                    href={`/products/${product.id}/shopee/handoff`}
+                  >
+                    Manual Handoff
+                    <ArrowRight aria-hidden="true" />
+                  </Link>
+                </div>
               </div>
-              <Link
-                className={buttonVariants()}
-                href={`/products/${product.id}/shopee/handoff`}
-              >
-                Continue to Guided Handoff
-                <ArrowRight aria-hidden="true" />
-              </Link>
             </div>
           ) : (
             <p className="border-t pt-6 text-sm text-muted-foreground">

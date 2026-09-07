@@ -289,6 +289,65 @@ export type Database = {
           },
         ]
       }
+      shopee_upload_jobs: {
+        Row: {
+          created_at: string
+          finished_at: string | null
+          id: string
+          manifest: Json
+          manifest_fingerprint: string
+          owner_id: string
+          product_id: string
+          ready_revision: string
+          safe_error_code: string | null
+          safe_message: string | null
+          seller_product_reference: string | null
+          started_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          finished_at?: string | null
+          id?: string
+          manifest: Json
+          manifest_fingerprint: string
+          owner_id?: string
+          product_id: string
+          ready_revision: string
+          safe_error_code?: string | null
+          safe_message?: string | null
+          seller_product_reference?: string | null
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          finished_at?: string | null
+          id?: string
+          manifest?: Json
+          manifest_fingerprint?: string
+          owner_id?: string
+          product_id?: string
+          ready_revision?: string
+          safe_error_code?: string | null
+          safe_message?: string | null
+          seller_product_reference?: string | null
+          started_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shopee_upload_jobs_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

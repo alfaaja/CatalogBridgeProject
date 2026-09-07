@@ -91,7 +91,7 @@ describe("Shopee mapping form", () => {
     );
   });
 
-  it("renders READY mapping read-only with reopen as the only mutation", () => {
+  it("offers Auto Send and preserves Manual Handoff for an eligible READY snapshot", () => {
     const ready = { ...product, status: "READY" as const };
     const html = renderToStaticMarkup(
       <ShopeeMappingForm
@@ -101,7 +101,8 @@ describe("Shopee mapping form", () => {
       />,
     );
     expect(html).toContain("Reopen Shopee Mapping");
-    expect(html).toContain("Continue to Guided Handoff");
+    expect(html).toContain("Auto Send to Shopee");
+    expect(html).toContain("Manual Handoff");
     expect(html).toContain(`/products/${productId}/shopee/handoff`);
     expect(html).not.toContain("Save Shopee Draft");
     expect(html).not.toContain("Mark Ready for Shopee");
@@ -121,5 +122,43 @@ describe("Shopee mapping form", () => {
     expect(html).not.toContain("Mark Ready for Shopee");
     expect(html).not.toContain("Reopen Shopee Mapping");
     expect(html).not.toContain("Continue to Guided Handoff");
+    expect(html).not.toContain("Auto Send to Shopee");
+    expect(html).not.toContain("Manual Handoff");
+  });
+
+  it.each([
+    ["QUEUED", "Waiting for runner"],
+    ["WAITING_FOR_RUNNER", "Runner connected"],
+    ["AUTH_REQUIRED", "Authentication required"],
+    ["RUNNING", "Filling Seller Centre"],
+    ["NEEDS_USER_ACTION", "Needs attention"],
+    ["SAVED_ARCHIVED", "Saved as archived"],
+    ["FAILED", "Failed safely"],
+  ] as const)("renders truthful %s automation status", (status, label) => {
+    const ready = { ...product, status: "READY" as const };
+    const html = renderToStaticMarkup(
+      <ShopeeMappingForm
+        draft={draft}
+        preview={buildShopeePreview(ready, draft)}
+        product={ready}
+        uploadJob={{
+          createdAt: "2026-09-07T00:00:00.000Z",
+          finishedAt: null,
+          id: "44444444-4444-4444-8444-444444444444",
+          manifestFingerprint: "a".repeat(64),
+          productId,
+          readyRevision: ready.updatedAt,
+          safeErrorCode: status === "FAILED" ? "UNEXPECTED_SELLER_UI" : null,
+          safeMessage: null,
+          sellerProductReference: null,
+          startedAt: null,
+          status,
+          updatedAt: "2026-09-07T00:00:00.000Z",
+        }}
+      />,
+    );
+
+    expect(html).toContain(label);
+    expect(html).not.toMatch(/published|save and display/iu);
   });
 });
