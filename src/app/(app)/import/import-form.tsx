@@ -1,21 +1,22 @@
-"use client"
+"use client";
 
-import { useActionState } from "react"
-import { Import, Info, Upload } from "lucide-react"
+import { useActionState } from "react";
+import { Import, Info, Upload } from "lucide-react";
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
-import {
-  importProductAction,
-  type ImportProductActionState,
-} from "./actions"
+import { importProductAction, type ImportProductActionState } from "./actions";
 
-const initialState: ImportProductActionState = {}
-
-function SubmitButton({ pending }: { pending: boolean }) {
+function SubmitButton({
+  assisted = false,
+  pending,
+}: {
+  assisted?: boolean;
+  pending: boolean;
+}) {
   return (
     <Button
       aria-describedby="import-help"
@@ -23,17 +24,26 @@ function SubmitButton({ pending }: { pending: boolean }) {
       disabled={pending}
       type="submit"
     >
-      <Import aria-hidden="true" />
-      {pending ? "Importing..." : "Import Product"}
+      {assisted ? <Upload aria-hidden="true" /> : <Import aria-hidden="true" />}
+      {pending
+        ? "Importing..."
+        : assisted
+          ? "Continue Import"
+          : "Import Product"}
     </Button>
-  )
+  );
 }
 
-export function ImportProductForm() {
+export function ImportProductForm({
+  initialState = {},
+}: {
+  initialState?: ImportProductActionState;
+}) {
   const [state, formAction, pending] = useActionState(
     importProductAction,
-    initialState
-  )
+    initialState,
+  );
+  const assisted = state.recovery === "browser_verification";
 
   return (
     <form action={formAction} className="space-y-8">
@@ -55,6 +65,25 @@ export function ImportProductForm() {
         </Alert>
       ) : null}
 
+      {assisted ? (
+        <Alert aria-live="polite" role="status">
+          <Info aria-hidden="true" />
+          <AlertTitle>JakMall requires browser verification</AlertTitle>
+          <AlertDescription>
+            <p>
+              Direct import was blocked by JakMall&apos;s browser verification.
+              Open this product normally, save the page as HTML, then upload the
+              saved page to continue.
+            </p>
+            <ol className="mt-3 list-decimal space-y-1 pl-5">
+              <li>Open the same JakMall product page.</li>
+              <li>Save the page as HTML.</li>
+              <li>Upload the saved file below.</li>
+            </ol>
+          </AlertDescription>
+        </Alert>
+      ) : null}
+
       <section aria-labelledby="import-link-title" className="border-t pt-6">
         <div className="flex items-start gap-3">
           <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-md border bg-background text-muted-foreground">
@@ -65,7 +94,8 @@ export function ImportProductForm() {
               JakMall product link
             </h2>
             <p className="mt-1 text-sm leading-6 text-muted-foreground">
-              Accepted source: one public HTTPS product page on jakmall.com.
+              Paste a public JakMall product URL. CatalogBridge will try to
+              import it directly.
             </p>
           </div>
         </div>
@@ -76,13 +106,16 @@ export function ImportProductForm() {
             <Input
               aria-describedby="import-help"
               className="h-10 flex-1 bg-background"
+              defaultValue={state.sourceUrl}
               id="jakmall-url"
+              key={assisted ? "assisted-url" : "direct-url"}
               name="jakmallUrl"
               placeholder="https://www.jakmall.com/store/product-name"
+              readOnly={assisted}
               required
               type="url"
             />
-            <SubmitButton pending={pending} />
+            {!assisted ? <SubmitButton pending={pending} /> : null}
           </div>
           <p
             aria-live="polite"
@@ -94,41 +127,45 @@ export function ImportProductForm() {
         </div>
       </section>
 
-      <section
-        aria-labelledby="assisted-html-title"
-        className="rounded-lg border bg-background p-4"
-      >
-        <div className="flex items-start gap-3">
-          <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-md border bg-muted/40 text-muted-foreground">
-            <Upload aria-hidden="true" className="size-4" />
-          </span>
-          <div className="min-w-0">
-            <h2 id="assisted-html-title" className="text-base font-semibold">
-              Optional HTML file
-            </h2>
-            <p className="mt-1 text-sm leading-6 text-muted-foreground">
-              JakMall may require browser verification for automated requests.
-              If direct import is blocked, open the product normally in your
-              browser, save the page as HTML, then upload it here.
-            </p>
+      {assisted ? (
+        <section
+          aria-labelledby="assisted-html-title"
+          className="rounded-lg border bg-background p-4"
+        >
+          <div className="flex items-start gap-3">
+            <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-md border bg-muted/40 text-muted-foreground">
+              <Upload aria-hidden="true" className="size-4" />
+            </span>
+            <div className="min-w-0">
+              <h2 id="assisted-html-title" className="text-base font-semibold">
+                Continue with saved page
+              </h2>
+              <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                Use the HTML file saved from the same product URL shown above.
+              </p>
+            </div>
           </div>
-        </div>
-        <div className="mt-4">
-          <Label htmlFor="assisted-html">Saved product page</Label>
-          <Input
-            accept=".html,.htm,text/html,application/xhtml+xml"
-            className="mt-2 bg-background"
-            id="assisted-html"
-            name="assistedHtml"
-            type="file"
-          />
-          <p className="mt-2 text-xs leading-5 text-muted-foreground">
-            Upload one `.html` or `.htm` file up to 1 MiB. CatalogBridge reads
-            product data from the file but never displays or stores the full
-            HTML.
-          </p>
-        </div>
-      </section>
+          <div className="mt-4">
+            <Label htmlFor="assisted-html">Saved product page</Label>
+            <Input
+              accept=".html,.htm,text/html,application/xhtml+xml"
+              className="mt-2 bg-background"
+              id="assisted-html"
+              name="assistedHtml"
+              required
+              type="file"
+            />
+            <p className="mt-2 text-xs leading-5 text-muted-foreground">
+              Upload one `.html` or `.htm` file up to 1 MiB. CatalogBridge reads
+              product data from the file but never displays or stores the full
+              HTML.
+            </p>
+            <div className="mt-4">
+              <SubmitButton assisted pending={pending} />
+            </div>
+          </div>
+        </section>
+      ) : null}
     </form>
-  )
+  );
 }

@@ -9,10 +9,10 @@ export type ImportProductErrorCode =
   | "SOURCE_PRODUCT_NOT_FOUND"
   | "SOURCE_REDIRECT_BLOCKED"
   | "SOURCE_TIMEOUT"
-  | "SOURCE_UNREACHABLE"
+  | "SOURCE_UNREACHABLE";
 
 const humanVerificationMessage =
-  "JakMall requires browser verification before this page can be accessed automatically. Open the product page normally in your browser, save it as HTML, then upload the file below."
+  "JakMall requires browser verification before this page can be accessed automatically. Open the product page normally in your browser, save it as HTML, then upload the file below.";
 
 const messages: Readonly<Record<ImportProductErrorCode, string>> = {
   AUTH_REQUIRED: "Please sign in again before importing a product.",
@@ -30,22 +30,21 @@ const messages: Readonly<Record<ImportProductErrorCode, string>> = {
   SOURCE_PRODUCT_NOT_FOUND: "JakMall could not find that product page.",
   SOURCE_REDIRECT_BLOCKED:
     "CatalogBridge could not safely follow that product page redirect.",
-  SOURCE_TIMEOUT:
-    "JakMall took too long to respond. Try again or use the HTML upload option.",
+  SOURCE_TIMEOUT: "JakMall took too long to respond. Try again.",
   SOURCE_UNREACHABLE:
-    "CatalogBridge could not reach that JakMall product page. Try again or use the HTML upload option.",
-}
+    "CatalogBridge could not reach that JakMall product page. Try again.",
+};
 
 export function publicImportErrorMessage(
   error: ImportProductErrorCode,
-  classification?: "AWS_WAF_HUMAN_VERIFICATION"
+  classification?: "AWS_WAF_HUMAN_VERIFICATION",
 ) {
   if (
     error === "SOURCE_UNREACHABLE" &&
     classification === "AWS_WAF_HUMAN_VERIFICATION"
   ) {
-    return humanVerificationMessage
+    return humanVerificationMessage;
   }
 
-  return messages[error]
+  return messages[error];
 }

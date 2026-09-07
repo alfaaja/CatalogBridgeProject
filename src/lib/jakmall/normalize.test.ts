@@ -1,13 +1,13 @@
-import { describe, expect, it } from "vitest"
+import { describe, expect, it } from "vitest";
 
 import {
   normalizeJakMallSourceProduct,
   RAW_SOURCE_DATA_MAX_BYTES,
-} from "./normalize"
-import type { JakMallSourceProduct } from "./types"
+} from "./normalize";
+import type { JakMallSourceProduct } from "./types";
 
 const canonicalSourceUrl =
-  "https://www.jakmall.com/fixture-store/fixture-product"
+  "https://www.jakmall.com/fixture-store/fixture-product";
 
 const baseSource: JakMallSourceProduct = {
   attributes: {},
@@ -29,13 +29,13 @@ const baseSource: JakMallSourceProduct = {
   variantAxes: [],
   warnings: [],
   weight: null,
-}
+};
 
 const context = {
   acquisitionMode: "assisted_html" as const,
   canonicalSourceUrl,
   documentByteLength: 12_345,
-}
+};
 
 describe("JakMall product normalization", () => {
   it("normalizes commerce values while preserving uncertainty", () => {
@@ -60,8 +60,8 @@ describe("JakMall product normalization", () => {
         sourcePrice: "Rp125.000,00",
         weight: { value: "1.2", unit: "kg" },
       },
-      context
-    )
+      context,
+    );
 
     expect(result).toMatchObject({
       product: {
@@ -85,8 +85,8 @@ describe("JakMall product normalization", () => {
           kind: "product",
         },
       ],
-    })
-  })
+    });
+  });
 
   it("preserves concrete offers without inventing identifiers or options", () => {
     const result = normalizeJakMallSourceProduct(
@@ -105,8 +105,8 @@ describe("JakMall product normalization", () => {
         ],
         warnings: ["OFFER_OPTIONS_UNMAPPED"],
       },
-      context
-    )
+      context,
+    );
 
     expect(result.variants).toEqual([
       {
@@ -119,9 +119,43 @@ describe("JakMall product normalization", () => {
         sourceVariantIdentifier: null,
         stock: null,
       },
-    ])
-    expect(result.warnings).toContain("OFFER_OPTIONS_UNMAPPED")
-  })
+    ]);
+    expect(result.warnings).toContain("OFFER_OPTIONS_UNMAPPED");
+  });
+
+  it("normalizes evidenced gr weight and does not spread one offer's availability", () => {
+    const result = normalizeJakMallSourceProduct(
+      {
+        ...baseSource,
+        offers: [
+          {
+            availability: "https://schema.org/OutOfStock",
+            image: null,
+            optionValues: { "Lain-lain": "12V 5A" },
+            sku: "3745456160987",
+            sourcePrice: 113500,
+            sourceVariantIdentifier: null,
+            stock: null,
+          },
+          {
+            availability: null,
+            image: null,
+            optionValues: { "Lain-lain": "12V 10A" },
+            sku: "5137292608193",
+            sourcePrice: 152500,
+            sourceVariantIdentifier: null,
+            stock: null,
+          },
+        ],
+        weight: { value: 400, unit: "gr" },
+      },
+      context,
+    );
+
+    expect(result.product.weightGrams).toBe(400);
+    expect(result.variants.map((variant) => variant.stock)).toEqual([0, null]);
+    expect(result.product.gtin).toBeNull();
+  });
 
   it("keeps curated raw source data below 32 KiB using UTF-8 bytes", () => {
     const result = normalizeJakMallSourceProduct(
@@ -129,13 +163,13 @@ describe("JakMall product normalization", () => {
         ...baseSource,
         warnings: Array.from({ length: 100 }, () => "peringatan-✓".repeat(100)),
       },
-      context
-    )
-    const serialized = JSON.stringify(result.product.rawSourceData)
+      context,
+    );
+    const serialized = JSON.stringify(result.product.rawSourceData);
 
     expect(Buffer.byteLength(serialized, "utf8")).toBeLessThanOrEqual(
-      RAW_SOURCE_DATA_MAX_BYTES
-    )
-    expect(serialized).not.toContain("<html")
-  })
-})
+      RAW_SOURCE_DATA_MAX_BYTES,
+    );
+    expect(serialized).not.toContain("<html");
+  });
+});
